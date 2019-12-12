@@ -23,10 +23,10 @@ except ImportError:
 
 DB = current_app.config.get('DB', import_module('.env', 'pypn_habref_api').DB)
 
-adresses = Blueprint("habref", __name__)
+routes = Blueprint("habref", __name__)
 
 
-@adresses.route("/search/<field>/<ilike>", methods=["GET"])
+@routes.route("/search/<field>/<ilike>", methods=["GET"])
 @json_resp
 def getSearchInField(field, ilike):
     """
@@ -58,7 +58,7 @@ def getSearchInField(field, ilike):
         "No column found in Taxref for {}".format(field), 500
 
 
-@adresses.route("/habitat/<int:cd_hab>", methods=["GET"])
+@routes.route("/habitat/<int:cd_hab>", methods=["GET"])
 @json_resp
 def get_hab(cd_hab):
     """
@@ -72,7 +72,7 @@ def get_hab(cd_hab):
     return one_hab
 
 
-@adresses.route("/habitats/list/<int:id_list>", methods=["GET"])
+@routes.route("/habitats/list/<int:id_list>", methods=["GET"])
 @json_resp
 def get_habref_list(id_list):
     q = (
@@ -84,7 +84,7 @@ def get_habref_list(id_list):
     return [d.as_dict() for d in data]
 
 
-@adresses.route("/habitats/autocomplete/list/<int:id_list>", methods=["GET"])
+@routes.route("/habitats/autocomplete/list/<int:id_list>", methods=["GET"])
 @json_resp
 def get_habref_autocomplete(id_list):
     """
@@ -129,7 +129,7 @@ def get_habref_autocomplete(id_list):
         return "No Result", 404
 
 
-@adresses.route("/typo", methods=["GET"])
+@routes.route("/typo", methods=["GET"])
 @json_resp
 def get_typo():
     """
@@ -156,7 +156,7 @@ def get_typo():
     return [d.as_dict() for d in data]
 
 
-@adresses.route("/correspondance/<int:cd_hab>", methods=["GET"])
+@routes.route("/correspondance/<int:cd_hab>", methods=["GET"])
 @json_resp
 def get_coresp(cd_hab):
     """

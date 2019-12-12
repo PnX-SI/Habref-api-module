@@ -20,7 +20,7 @@ setuptools.setup(
     description="Python lib related to Habref referential (INPN)",
     long_description=open('README.md', encoding="utf-8").read().strip(),
     author="Les parcs nationaux de France",
-    url='hhttps://github.com/PnX-SI/Habref-api-module',
+    url='https://github.com/PnX-SI/Habref-api-module',
     packages=setuptools.find_packages('src'),
     package_dir={'': 'src'},
     install_requires=list(open('requirements.txt', 'r')),

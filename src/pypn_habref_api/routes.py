@@ -5,7 +5,7 @@ from flask import jsonify, Blueprint, request, current_app
 from sqlalchemy import desc, func
 from sqlalchemy.orm.exc import NoResultFound
 
-from utils_flask_sqla.response import json_resp, serializeQuery, serializeQueryOneResult
+from utils_flask_sqla.response import json_resp
 
 from .models import (
     Habref,

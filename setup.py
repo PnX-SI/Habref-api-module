@@ -9,40 +9,11 @@ import re
 import setuptools
 import sys
 
-from setuptools import Command
-from setuptools.command.develop import develop
-
-
-from src.install import run_install_db
-
 
 def get_version(path="./VERSION"):
     """ Return the version of by with regex intead of importing it"""
     version_number = open(path, "rt").read()
     return version_number
-
-
-class InstallDB(Command):
-    description = """ 
-        Command to install database habref schema \n
-        usage: python setup.py install_db --settingspath="<FILE_PATH>"
-    """
-
-    user_options = [
-        ('settingspath=', None,
-         'Specify a settings path to find database connexion informations.'),
-    ]
-
-    def initialize_options(self):
-        """Abstract method that is required to be overwritten"""
-        self.settingspath = None
-
-    def finalize_options(self):
-        """Abstract method that is required to be overwritten"""
-        assert self.settingspath is not None, 'Please provide a settings file path'
-
-    def run(self):
-        run_install_db(self.settingspath)
 
 
 setuptools.setup(
@@ -56,7 +27,11 @@ setuptools.setup(
     package_dir={'': 'src'},
     install_requires=list(open('requirements.txt', 'r')),
     include_package_data=True,
-    cmdclass={'install_db': InstallDB},
+    # cmdclass={'install_db': InstallDB},
+    entry_points='''
+        [console_scripts]
+        install_habref_schema=pypn_habref_api.scripts.database:install_schema
+    ''',
     zip_safe=False,
     keywords='ww',
     classifiers=['Development Status :: 1 - Planning',

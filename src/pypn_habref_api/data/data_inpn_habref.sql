@@ -23,57 +23,57 @@ TRUNCATE TABLE habref_sources CASCADE;
 TRUNCATE TABLE cor_hab_source CASCADE;
 
 COPY bib_habref_typo_rel 
-FROM  '/tmp/habref/HABREF_TYPE_REL_40.csv'
+FROM  '/tmp/habref/HABREF_TYPE_REL_50.csv'
 WITH  CSV HEADER 
 DELIMITER E';'  encoding 'UTF-8';
 
 COPY bib_habref_statuts 
-FROM  '/tmp/habref/HABREF_STATUTS_40.csv'
+FROM  '/tmp/habref/HABREF_STATUTS_50.csv'
 WITH  CSV HEADER 
 DELIMITER E';'  encoding 'UTF-8';
 
 COPY habref_sources 
-FROM  '/tmp/habref/HABREF_SOURCES_40.csv'
+FROM  '/tmp/habref/HABREF_SOURCES_50.csv'
 WITH  CSV HEADER 
 DELIMITER E';'  encoding 'UTF-8';
 
 COPY typoref 
-FROM '/tmp/habref/TYPOREF_40.csv' 
+FROM '/tmp/habref/TYPOREF_50.csv' 
 WITH  CSV HEADER 
 DELIMITER E';'  encoding 'UTF-8';
 
 COPY habref 
-FROM '/tmp/habref/HABREF_NOHTML_40.csv' 
+FROM '/tmp/habref/HABREF_NOHTML_50.csv' 
 WITH  CSV HEADER 
 DELIMITER E';'  encoding 'UTF-8';
 
 COPY habref_corresp_hab
-FROM  '/tmp/habref/HABREF_CORRESP_HAB_40.csv'
+FROM  '/tmp/habref/HABREF_CORRESP_HAB_50.csv'
 WITH  CSV HEADER 
 DELIMITER E';'  encoding 'UTF-8';
 
 COPY habref_corresp_taxon 
-FROM  '/tmp/habref/HABREF_CORRESP_TAXON_40.csv'
+FROM  '/tmp/habref/HABREF_CORRESP_TAXON_50.csv'
 WITH  CSV HEADER 
 DELIMITER E';'  encoding 'UTF-8';
 
 COPY cor_habref_terr_statut 
-FROM  '/tmp/habref/HABREF_TERR_40.csv'
+FROM  '/tmp/habref/HABREF_TERR_50.csv'
 WITH  CSV HEADER 
 DELIMITER E';'  encoding 'UTF-8';
 
 COPY typoref_fields 
-FROM  '/tmp/habref/TYPOREF_FIELDS_40.csv'
+FROM  '/tmp/habref/TYPOREF_FIELDS_50.csv'
 WITH  CSV HEADER 
 DELIMITER E';'  encoding 'UTF-8';
 
 COPY cor_habref_description 
-FROM  '/tmp/habref/HABREF_DESCRIPTION_NOHTML_40.csv'
+FROM  '/tmp/habref/HABREF_DESCRIPTION_NOHTML_50.csv'
 WITH  CSV HEADER 
 DELIMITER E';'  encoding 'UTF-8';
 
 COPY cor_hab_source 
-FROM  '/tmp/habref/HABREF_LIEN_SOURCES_40.csv'
+FROM  '/tmp/habref/HABREF_LIEN_SOURCES_50.csv'
 WITH  CSV HEADER 
 DELIMITER E';'  encoding 'UTF-8';
 

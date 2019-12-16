@@ -17,17 +17,6 @@ import psycopg2
 CURDIR = Path(os.path.dirname(os.path.abspath(__file__)))
 DATADIR = CURDIR.parent / 'data'
 
-habref_file = [
-    'HABITATS.HABREF_NOTES_40.csv',  
-    'HABREF_DESCRIPTION_40.csv', 
-    'HABREF_SOURCES_40.csv',
-    'HABREF_VALIDITE_40.csv',
-    'HABREF_40.csv',   
-    'HABREF_DESCRIPTION_NOHTML_40.csv',  'HABREF_STATUTS_40.csv'   'TYPOREF_40.csv'
-'HABREF_CORRESP_HAB_40.csv',     'HABREF_LIEN_SOURCES_40.csv',        'HABREF_TERR_40.csv',      'TYPOREF_FIELDS_40.csv',
-'HABREF_CORRESP_TAXON_40.csv',   'HABREF_NOHTML_40.csv',             'HABREF_TYPE_REL_40.csv',  'TYPOREF_NOHTML_40.csv'
-]
-
 
 def download_habref():
     if not os.path.isdir('/tmp/habref'):
@@ -36,7 +25,7 @@ def download_habref():
     if not os.path.isfile('habref.zip'):
         print('DOWNLOADING HABREF...')
         resp = requests.get(
-            'https://geonature.fr/data/inpn/habitats/HABREF_40.zip'
+            'https://geonature.fr/data/inpn/habitats/HABREF_50.zip'
         )
         if resp.status_code != 200:
             raise Exception("Erreur while downlading Habref")
@@ -66,6 +55,7 @@ def database_connect(database_uri):
     '''
     return sqlalchemy.create_engine(database_uri)
 
+
 def run_sql_scripts(engine, databse_uri):
     uri = urlparse(databse_uri)
     db_name = uri.path[1:]
@@ -87,10 +77,10 @@ def run_sql_scripts(engine, databse_uri):
     conn.close()
 
 
-
 @click.group()
 def main():
     pass
+
 
 @main.command()
 @click.argument('db_uri')
@@ -109,6 +99,7 @@ def install_schema(db_uri):
 @click.argument('db_uri')
 def drop_schema(db_uri):
     click.echo('Drop the schema in, {}'.format(db_uri))
+
 
 if __name__ == '__main__':
     main()

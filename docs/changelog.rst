@@ -1,0 +1,17 @@
+=========
+CHANGELOG
+=========
+
+0.1.0 (2019-12-17)
+-----------------------------------
+
+Premère version stabilisée du sous-module Habref.
+
+* SQL de création d'un schéma ref_nomenclature contenant les données HABREF 5
+* Commande python de création et d'import des données HABREF 
+* API d'interrogation du référentiel Habref:
+    - recherche dans la table Habref sur l'ensemble des champs
+    - Interrogation de la table typo_ref
+    - Recherche d'informations sur un habitat et ses correspodances
+    - Interrogation autcompletée et intelligente sur des liste d'habitat crées au préalable
+

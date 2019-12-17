@@ -280,7 +280,6 @@ ALTER TABLE ONLY autocomplete_habitat
 ALTER TABLE ONLY habref 
     ADD CONSTRAINT fk_typoref FOREIGN KEY (cd_typo) REFERENCES ref_habitat.typoref (cd_typo) ON UPDATE CASCADE;
 
-
 ALTER TABLE ONLY cor_list_habitat
     ADD CONSTRAINT fk_cor_list_habitat_cd_hab FOREIGN KEY (cd_hab) REFERENCES ref_habitat.habref (cd_hab) ON UPDATE CASCADE;
     

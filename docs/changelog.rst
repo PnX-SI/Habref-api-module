@@ -18,7 +18,7 @@ Première version stabilisée du sous-module Habref.
 * Commande python de création et d'import des données HABREF 
 * API d'interrogation du référentiel Habref :
 
-  - Recherche dans la table ``habref`` sur l'ensemble des champs (avec usage du trigramme pour la pertinence du résultat)
+  - Recherche dans la table ``habref`` sur l'ensemble des champs
   - Interrogation de la table ``typo_ref``
   - Recherche d'informations sur un habitat et ses correspondances
   - Interrogation auto-complétée et intelligente sur des listes d'habitats créées au préalable

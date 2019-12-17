@@ -5,7 +5,7 @@ SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
-SET search_path = ref_habitat, pg_catalog;
+SET search_path = ref_habitats, pg_catalog;
 
 
 TRUNCATE TABLE habref CASCADE;
@@ -90,12 +90,12 @@ ALTER TABLE cor_habref_description DROP COLUMN lb_hab_field;
 
 -- CREATE TABLE AUTOCOMPLETE
 
-INSERT INTO ref_habitat.autocomplete_habitat
+INSERT INTO ref_habitats.autocomplete_habitat
 SELECT 
 cd_hab,
 h.cd_typo,
 lb_code,
 lb_nom_typo,
 concat(lb_code, ' - ', lb_hab_fr, ' ', lb_hab_fr_complet)
-FROM ref_habitat.habref h
-JOIN ref_habitat.typoref t ON t.cd_typo = h.cd_typo;
+FROM ref_habitats.habref h
+JOIN ref_habitats.typoref t ON t.cd_typo = h.cd_typo;

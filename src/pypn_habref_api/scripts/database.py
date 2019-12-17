@@ -41,12 +41,12 @@ def check_if_schema_exist(database_uri):
     engine = database_connect(database_uri)
     with engine.connect():
         sql = '''
-        SELECT count(*) FROM information_schema.schemata WHERE schema_name = 'ref_habitat';
+        SELECT count(*) FROM information_schema.schemata WHERE schema_name = 'ref_habitats';
         '''
         r = engine.execute(sql).fetchone()
         if r[0] == 1:
-            raise Exception('Schema ref_habitat already exist')
-        click.echo("Schema ref_habitat does not exist, let's install it !")
+            raise Exception('Schema ref_habitats already exist')
+        click.echo("Schema ref_habitats does not exist, let's install it !")
 
 
 def database_connect(database_uri):
@@ -71,7 +71,7 @@ def run_sql_scripts(engine, databse_uri):
     code = subprocess.call(command.split())
     if code != 0:
         raise Exception(
-            'An error occured while insering Habref data in ref_habitat schema'
+            'An error occured while insering Habref data in ref_habitats schema'
         )
     conn.execute('COMMIT')
     conn.close()
@@ -85,14 +85,14 @@ def main():
 @main.command()
 @click.argument('db_uri')
 def install_schema(db_uri):
-    click.echo('Initialized the schema ref_habitat in, {}'.format(db_uri))
+    click.echo('Initialized the schema ref_habitats in, {}'.format(db_uri))
     check_if_schema_exist(db_uri)
     download_habref()
     engine = database_connect(db_uri)
     run_sql_scripts(engine, db_uri)
     click.echo('\n\n ')
     click.echo('\o/ ')
-    click.echo('## Install sucessfully schema ref_habitat  ##')
+    click.echo('## Install sucessfully schema ref_habitats  ##')
 
 
 @main.command()

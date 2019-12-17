@@ -7,7 +7,7 @@ CHANGELOG
 
 Premère version stabilisée du sous-module Habref.
 
-* SQL de création d'un schéma ref_nomenclature contenant les données HABREF 5
+* SQL de création d'un schéma ref_habitats contenant les données HABREF 5
 * Commande python de création et d'import des données HABREF 
 * API d'interrogation du référentiel Habref:
     - recherche dans la table Habref sur l'ensemble des champs

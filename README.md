@@ -23,7 +23,7 @@ API d'interrogation d'Habref: référentiel des Habitat de l'INPN : https://inpn
 
 - Installer le schéma de base de données
 
-Le module est fourni avec une commande pour installer la base de données. Cette commande télécharge le référentiel habref et crée un schéma de base de données nommé `ref_habitat`
+Le module est fourni avec une commande pour installer la base de données. Cette commande télécharge le référentiel habref et crée un schéma de base de données nommé `ref_habitats`
 
 ::
 

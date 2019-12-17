@@ -14,7 +14,7 @@ DB = current_app.config.get('DB', import_module('.env', 'pypn_habref_api').DB)
 @serializable
 class BibHabrefTypoRel(DB.Model):
     __tablename__ = "bib_habref_typo_rel"
-    __table_args__ = {"schema": "ref_habitat"}
+    __table_args__ = {"schema": "ref_habitats"}
     cd_type_rel = DB.Column(DB.Integer, primary_key=True)
     lb_type_rel = DB.Column(DB.Unicode)
     lb_rel = DB.Column(DB.Unicode)
@@ -26,13 +26,13 @@ class BibHabrefTypoRel(DB.Model):
 @serializable
 class CorespHab(DB.Model):
     __tablename__ = "habref_corresp_hab"
-    __table_args__ = {"schema": "ref_habitat"}
+    __table_args__ = {"schema": "ref_habitats"}
     cd_corresp_hab = DB.Column(DB.Integer, primary_key=True)
     cd_hab_entre = DB.Column(
-        DB.Integer, ForeignKey("ref_habitat.habref.cd_hab"))
+        DB.Integer, ForeignKey("ref_habitats.habref.cd_hab"))
     cd_hab_sortie = DB.Column(DB.Integer)
     cd_type_relation = DB.Column(
-        DB.Integer, ForeignKey("ref_habitat.bib_habref_typo_rel.cd_type_rel")
+        DB.Integer, ForeignKey("ref_habitats.bib_habref_typo_rel.cd_type_rel")
     )
     lb_condition = DB.Column(DB.Unicode)
     lb_remarques = DB.Column(DB.Unicode)
@@ -48,7 +48,7 @@ class CorespHab(DB.Model):
 @serializable
 class TypoRef(DB.Model):
     __tablename__ = "typoref"
-    __table_args__ = {"schema": "ref_habitat"}
+    __table_args__ = {"schema": "ref_habitats"}
     cd_typo = DB.Column(DB.Integer, primary_key=True)
     cd_table = DB.Column(DB.Unicode)
     lb_nom_typo = DB.Column(DB.Unicode)
@@ -78,10 +78,10 @@ class TypoRef(DB.Model):
 @serializable
 class Habref(DB.Model):
     __tablename__ = "habref"
-    __table_args__ = {"schema": "ref_habitat"}
+    __table_args__ = {"schema": "ref_habitats"}
     cd_hab = DB.Column(DB.Integer, primary_key=True)
     fg_validite = DB.Column(DB.Unicode)
-    cd_typo = DB.Column(DB.Integer, ForeignKey("ref_habitat.typoref.cd_typo"))
+    cd_typo = DB.Column(DB.Integer, ForeignKey("ref_habitats.typoref.cd_typo"))
     lb_code = DB.Column(DB.Unicode)
     lb_hab_fr = DB.Column(DB.Unicode)
     lb_hab_fr_complet = DB.Column(DB.Unicode)
@@ -101,7 +101,7 @@ class Habref(DB.Model):
 @serializable
 class BibListHabitat(DB.Model):
     __tablename__ = "bib_list_habitat"
-    __table_args__ = {"schema": "ref_habitat"}
+    __table_args__ = {"schema": "ref_habitats"}
     id_list = DB.Column(DB.Integer, primary_key=True)
     list_name = DB.Column(DB.Unicode)
 
@@ -109,17 +109,17 @@ class BibListHabitat(DB.Model):
 @serializable
 class CorListHabitat(DB.Model):
     __tablename__ = "cor_list_habitat"
-    __table_args__ = {"schema": "ref_habitat"}
+    __table_args__ = {"schema": "ref_habitats"}
     id_cor_list = DB.Column(DB.Integer, primary_key=True)
     id_list = DB.Column(DB.Integer, ForeignKey(
-        "ref_habitat.bib_list_habitat.id_list"))
-    cd_hab = DB.Column(DB.Integer, ForeignKey("ref_habitat.habref.cd_hab"))
+        "ref_habitats.bib_list_habitat.id_list"))
+    cd_hab = DB.Column(DB.Integer, ForeignKey("ref_habitats.habref.cd_hab"))
 
 
 @serializable
 class AutoCompleteHabitat(DB.Model):
     __tablename__ = "autocomplete_habitat"
-    __table_args__ = {"schema": "ref_habitat"}
+    __table_args__ = {"schema": "ref_habitats"}
     cd_hab = DB.Column(DB.Integer, primary_key=True)
     cd_typo = DB.Column(DB.Integer)
     lb_code = DB.Column(DB.Unicode)

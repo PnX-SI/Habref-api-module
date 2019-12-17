@@ -21,4 +21,4 @@ Première version stabilisée du sous-module Habref.
   - Recherche dans la table ``habref`` sur l'ensemble des champs (avec usage du trigramme pour la pertinence du résultat)
   - Interrogation de la table ``typo_ref``
   - Recherche d'informations sur un habitat et ses correspondances
-  - Interrogation autocompletée et intelligente sur des listes d'habitats créées au préalable
+  - Interrogation auto-complétée et intelligente sur des listes d'habitats créées au préalable

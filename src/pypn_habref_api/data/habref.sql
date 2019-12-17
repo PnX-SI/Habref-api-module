@@ -283,6 +283,9 @@ ALTER TABLE ONLY habref
 
 ALTER TABLE ONLY cor_list_habitat
     ADD CONSTRAINT fk_cor_list_habitat_cd_hab FOREIGN KEY (cd_hab) REFERENCES ref_habitat.habref (cd_hab) ON UPDATE CASCADE;
+    
+ALTER TABLE ONLY cor_list_habitat
+    ADD CONSTRAINT fk_cor_list_habitat_id_list FOREIGN KEY (id_list) REFERENCES ref_habitat.bib_list_habitat (id_list) ON UPDATE CASCADE;
 
 
 ALTER TABLE ONLY habref_corresp_hab

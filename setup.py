@@ -25,9 +25,8 @@ setuptools.setup(
     url='https://github.com/PnX-SI/Habref-api-module',
     packages=setuptools.find_packages('src'),
     package_dir={'': 'src'},
-    install_requires=list(open('requirements.txt', 'r')),
     include_package_data=True,
-    # cmdclass={'install_db': InstallDB},
+    install_requires=list(open('requirements.txt', 'r')),
     entry_points='''
         [console_scripts]
         install_habref_schema=pypn_habref_api.scripts.database:install_schema

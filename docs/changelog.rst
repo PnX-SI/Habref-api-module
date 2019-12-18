@@ -2,12 +2,13 @@
 CHANGELOG
 =========
 
-0.1.1 (unreleased)
+0.1.1 (2019-12-18)
 ------------------
 
 **Corrections**
 
 * Ajout des fichiers SQL d'installation du schéma ``ref_habitats`` dans le paquet
+* Montée de version de la librairie utils-Flask-SQLAlchemy
 
 0.1.0 (2019-12-17)
 ------------------

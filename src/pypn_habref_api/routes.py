@@ -33,6 +33,8 @@ def getSearchInField(field, ilike):
     Get the first 20 result of Habref table for a given field with an ilike query
     Use trigram algo to add relevance
 
+    .. :quickref: Habref;
+
     :params field: a Habref column
     :type field: str
     :param ilike: the ilike where expression to filter
@@ -63,6 +65,11 @@ def getSearchInField(field, ilike):
 def get_hab(cd_hab):
     """
     Get one habitat with its correspondances
+
+    .. :quickref: Habref;
+
+    :params cd_hab: a cd_hab
+    :type cd_hab: int
     """
     one_hab = DB.session.query(Habref).get(cd_hab).as_dict(True)
     for cor in one_hab["correspondances"]:
@@ -72,23 +79,14 @@ def get_hab(cd_hab):
     return one_hab
 
 
-@routes.route("/habitats/list/<int:id_list>", methods=["GET"])
-@json_resp
-def get_habref_list(id_list):
-    q = (
-        DB.session.query(Habref)
-        .join(CorNomListe, CorListHabitat.cd_hab == CorListHabitat.cd_hab)
-        .filter(CorNomListe.id_list == id_list)
-    ).all()
-
-    return [d.as_dict() for d in data]
-
 
 @routes.route("/habitats/autocomplete/list/<int:id_list>", methods=["GET"])
 @json_resp
 def get_habref_autocomplete(id_list):
     """
-    Get all habref items for autocomplete
+    Get all habref items of a list for autocomplete
+
+    .. :quickref: Habref;
 
     :param id_list: the id of the habref list 
     :type id_list: int
@@ -135,6 +133,8 @@ def get_typo():
     """
     Get all typology
 
+    .. :quickref: Habref;
+
     :query int id_list: return only the typology of a given id_list
     :returns: Array<TypoRef>
     """
@@ -160,9 +160,12 @@ def get_typo():
 @json_resp
 def get_coresp(cd_hab):
     """
-    Get all correspondance
+    Get all correspondances in other typo from a cd_hab
 
-    :returns: 
+    .. :quickref: Habref;
+
+    :params cd_hab: a cd_hab
+    :type cd_hab: int
     """
     q = (
         DB.session.query(CorespHab, BibHabrefTypoRel, Habref, TypoRef)

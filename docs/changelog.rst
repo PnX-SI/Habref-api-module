@@ -7,7 +7,7 @@ CHANGELOG
 
 **Corrections**
 
-*
+* Ajout des fichiers SQL d'installation du schéma ``ref_habitats`` dans le paquet
 
 0.1.0 (2019-12-17)
 ------------------

@@ -72,12 +72,12 @@ def get_hab(cd_hab):
     :type cd_hab: int
     """
     one_hab = DB.session.query(Habref).get(cd_hab).as_dict(True)
-    for cor in one_hab["correspondances"]:
-        hab_sortie = DB.session.query(Habref).get(
-            cor["cd_hab_sortie"]).as_dict(True)
-        cor["habref"] = hab_sortie
+    if 'correspondances' in one_hab:
+        for cor in one_hab["correspondances"]:
+            hab_sortie = DB.session.query(Habref).get(
+                cor["cd_hab_sortie"]).as_dict(True)
+            cor["habref"] = hab_sortie
     return one_hab
-
 
 
 @routes.route("/habitats/autocomplete/list/<int:id_list>", methods=["GET"])

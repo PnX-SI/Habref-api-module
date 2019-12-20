@@ -2,6 +2,13 @@
 CHANGELOG
 =========
 
+0.1.2 (2019-12-20)
+------------------
+
+**Corrections**
+
+* Correction erreur 500 lorsqu'un habitat n'a pas de correspondance
+
 0.1.1 (2019-12-18)
 ------------------
 

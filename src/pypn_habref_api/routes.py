@@ -21,7 +21,7 @@ try:
 except ImportError:
     from urllib import unquote
 
-DB = current_app.config.get('DB', import_module('.env', 'pypn_habref_api').DB)
+DB = current_app.config.get("DB", import_module(".env", "pypn_habref_api").DB)
 
 routes = Blueprint("habref", __name__)
 
@@ -48,8 +48,7 @@ def getSearchInField(field, ilike):
         value = value.replace(" ", "%")
         column = habref_columns[field]
         q = (
-            DB.session.query(Habref, func.similarity(
-                column, value).label("idx_trgm"))
+            DB.session.query(Habref, func.similarity(column, value).label("idx_trgm"))
             .filter(column.ilike("%" + value + "%"))
             .order_by(desc("idx_trgm"))
         )
@@ -72,25 +71,24 @@ def get_hab(cd_hab):
     :type cd_hab: int
     """
     one_hab = DB.session.query(Habref).get(cd_hab).as_dict(True)
-    if 'correspondances' in one_hab:
+    if "correspondances" in one_hab:
         for cor in one_hab["correspondances"]:
-            hab_sortie = DB.session.query(Habref).get(
-                cor["cd_hab_sortie"]).as_dict(True)
+            hab_sortie = (
+                DB.session.query(Habref).get(cor["cd_hab_sortie"]).as_dict(True)
+            )
             cor["habref"] = hab_sortie
     return one_hab
 
 
-@routes.route("/habitats/autocomplete/list/<int:id_list>", methods=["GET"])
+@routes.route("/habitats/autocomplete", methods=["GET"])
 @json_resp
-def get_habref_autocomplete(id_list):
+def get_habref_autocomplete():
     """
     Get all habref items of a list for autocomplete
 
     .. :quickref: Habref;
 
-    :param id_list: the id of the habref list 
-    :type id_list: int
-
+    :query id_list int: the id of the habref list 
     :query search_name str: the pattern to filter with
     :query cd_typo int: filter by typology
     :query limit int: number of results, default = 20
@@ -99,16 +97,15 @@ def get_habref_autocomplete(id_list):
     """
     params = request.args
     search_name = params.get("search_name")
-    q = (
-        DB.session.query(
-            AutoCompleteHabitat,
-            func.similarity(AutoCompleteHabitat.search_name, search_name).label(
-                "idx_trgm"
-            ),
-        )
-        .join(CorListHabitat, CorListHabitat.cd_hab == AutoCompleteHabitat.cd_hab)
-        .filter(CorListHabitat.id_list == id_list)
+    q = DB.session.query(
+        AutoCompleteHabitat,
+        func.similarity(AutoCompleteHabitat.search_name, search_name).label("idx_trgm"),
     )
+
+    if "id_list" in params:
+        q = q.join(
+            CorListHabitat, CorListHabitat.cd_hab == AutoCompleteHabitat.cd_hab
+        ).filter(CorListHabitat.id_list == params.get("id_list"))
 
     search_name = search_name.replace(" ", "%")
     q = q.filter(
@@ -120,6 +117,8 @@ def get_habref_autocomplete(id_list):
         q = q.filter(AutoCompleteHabitat.cd_typo == params.get("cd_typo"))
 
     limit = request.args.get("limit", 20)
+    print(q)
+
     data = q.limit(limit).all()
     if data:
         return [d[0].as_dict() for d in data]
@@ -179,8 +178,7 @@ def get_coresp(cd_hab):
 
     data = []
     for d in q.all():
-        temp = {**d[0].as_dict(), **d[1].as_dict(), **
-                d[2].as_dict(), **d[3].as_dict()}
+        temp = {**d[0].as_dict(), **d[1].as_dict(), **d[2].as_dict(), **d[3].as_dict()}
         data.append(temp)
 
     return data

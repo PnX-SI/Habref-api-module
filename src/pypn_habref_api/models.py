@@ -1,7 +1,5 @@
-
 # coding: utf8
-from __future__ import (unicode_literals, print_function,
-                        absolute_import, division)
+from __future__ import unicode_literals, print_function, absolute_import, division
 from importlib import import_module
 from flask import current_app
 from sqlalchemy import ForeignKey
@@ -10,7 +8,9 @@ from sqlalchemy.sql import select, func
 from utils_flask_sqla.serializers import serializable
 
 # get or create the SQLAlchemy DB instance
-DB = current_app.config.get('DB', import_module('.env', 'pypn_habref_api').DB)
+DB = current_app.config.get("DB", import_module(".env", "pypn_habref_api").DB)
+
+
 @serializable
 class BibHabrefTypoRel(DB.Model):
     __tablename__ = "bib_habref_typo_rel"
@@ -28,8 +28,7 @@ class CorespHab(DB.Model):
     __tablename__ = "habref_corresp_hab"
     __table_args__ = {"schema": "ref_habitats"}
     cd_corresp_hab = DB.Column(DB.Integer, primary_key=True)
-    cd_hab_entre = DB.Column(
-        DB.Integer, ForeignKey("ref_habitats.habref.cd_hab"))
+    cd_hab_entre = DB.Column(DB.Integer, ForeignKey("ref_habitats.habref.cd_hab"))
     cd_hab_sortie = DB.Column(DB.Integer)
     cd_type_relation = DB.Column(
         DB.Integer, ForeignKey("ref_habitats.bib_habref_typo_rel.cd_type_rel")
@@ -94,7 +93,7 @@ class Habref(DB.Model):
     france = DB.Column(DB.Unicode)
     lb_description = DB.Column(DB.Unicode)
 
-    typo = DB.relationship("TypoRef", lazy="select")
+    typo = DB.relationship("TypoRef", lazy="joined")
     correspondances = DB.relationship("CorespHab", lazy="select")
 
 
@@ -111,8 +110,7 @@ class CorListHabitat(DB.Model):
     __tablename__ = "cor_list_habitat"
     __table_args__ = {"schema": "ref_habitats"}
     id_cor_list = DB.Column(DB.Integer, primary_key=True)
-    id_list = DB.Column(DB.Integer, ForeignKey(
-        "ref_habitats.bib_list_habitat.id_list"))
+    id_list = DB.Column(DB.Integer, ForeignKey("ref_habitats.bib_list_habitat.id_list"))
     cd_hab = DB.Column(DB.Integer, ForeignKey("ref_habitats.habref.cd_hab"))
 
 

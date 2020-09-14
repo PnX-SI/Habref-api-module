@@ -1,8 +1,4 @@
-# coding: utf8
 from flask import Flask, request
-from flask_admin import Admin
-import importlib
-import datetime
 from src.pypnnomenclature.env import DB
 app_globals = {}
 

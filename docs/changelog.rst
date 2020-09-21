@@ -2,12 +2,14 @@
 CHANGELOG
 =========
 
-0.1.4 (unreleased)
+0.1.4 (2020-10-21)
 ------------------
 
-**Corrections**
+**🚀 Nouveautés**
 
-* 
+* La route `/habitats/autocomplete` n'a plus de paramètre `id_list` obligatoire
+* Ajout de schéma Marshmallow pour la sérialisation 
+* Mise à jour des dépendances Python (psycopg2 et SQLAlchemy)
 
 0.1.3 (2020-06-17)
 ------------------

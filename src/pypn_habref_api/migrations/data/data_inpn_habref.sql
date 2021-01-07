@@ -76,26 +76,3 @@ COPY cor_hab_source
 FROM  '/tmp/habref/HABREF_LIEN_SOURCES_50.csv'
 WITH  CSV HEADER 
 DELIMITER E';'  encoding 'UTF-8';
-
-
--- suppression des colonnes inutiles (mise pour lisibilité dans HABREF)
-ALTER TABLE cor_habref_description DROP COLUMN cd_typo;
-ALTER TABLE cor_habref_description DROP COLUMN lb_code;
-ALTER TABLE cor_habref_description DROP COLUMN lb_hab_field;
-
--- TODO ? conversion en timestamp ?
---     to_timestamp(date_crea, 'YYYYMMDDHH24MISS') ,
---     to_timestamp(date_modif, 'YYYYMMDDHH24MISS')
-
-
--- CREATE TABLE AUTOCOMPLETE
-
-INSERT INTO ref_habitats.autocomplete_habitat
-SELECT 
-cd_hab,
-h.cd_typo,
-lb_code,
-lb_nom_typo,
-concat(lb_code, ' - ', lb_hab_fr, ' ', lb_hab_fr_complet)
-FROM ref_habitats.habref h
-JOIN ref_habitats.typoref t ON t.cd_typo = h.cd_typo;

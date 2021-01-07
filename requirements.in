@@ -5,4 +5,3 @@ marshmallow-sqlalchemy
 marshmallow
 psycopg2
 utils-flask-sqlalchemy
-requests

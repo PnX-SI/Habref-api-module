@@ -2,4 +2,3 @@ include VERSION
 include LICENCE
 include README.rst
 include requirements.in
-recursive-include src *.sql

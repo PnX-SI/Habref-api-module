@@ -16,20 +16,14 @@ setuptools.setup(
     version=version,
     description="Python lib related to Habref referential (INPN)",
     long_description=long_description,
-    ong_description_content_type='text/markdown'
+    long_description_content_type='text/markdown',
     maintainer='Parcs nationaux des Écrins et des Cévennes',
     maintainer_email='geonature@ecrins-parcnational.fr',
     url="https://github.com/PnX-SI/Habref-api-module",
     packages=setuptools.find_packages("src"),
     package_dir={"": "src"},
+    package_data={'pypn_habref_api.migrations': ['data/*.sql']},
     install_requires=requirements,
-    include_package_data=True,
-    # cmdclass={'install_db': InstallDB},
-    entry_points="""
-        [console_scripts]
-        install_habref_schema=pypn_habref_api.scripts.database:install_schema
-    """,
-    zip_safe=False,
     classifiers=[
         "Development Status :: 1 - Planning",
         "Intended Audience :: Developers",

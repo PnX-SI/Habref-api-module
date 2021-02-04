@@ -2,6 +2,14 @@
 CHANGELOG
 =========
 
+0.1.5 (2020-02-04)
+------------------
+
+**🐛 Corrections**
+
+* Les dépendances du fichier `requirements.txt` ne sont plus fixées à une version
+
+
 0.1.4 (2020-10-21)
 ------------------
 

@@ -16,7 +16,7 @@ setuptools.setup(
     version=version,
     description="Python lib related to Habref referential (INPN)",
     long_description=long_description,
-    ong_description_content_type='text/markdown'
+    long_description_content_type='text/markdown',
     maintainer='Parcs nationaux des Écrins et des Cévennes',
     maintainer_email='geonature@ecrins-parcnational.fr',
     url="https://github.com/PnX-SI/Habref-api-module",

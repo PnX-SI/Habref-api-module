@@ -7,6 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from utils_flask_sqla.response import json_resp
 
+from .env import DB
 from .models import (
     Habref,
     CorListHabitat,
@@ -20,8 +21,6 @@ try:
     from urllib.parse import unquote
 except ImportError:
     from urllib import unquote
-
-DB = current_app.config.get("DB", import_module(".env", "pypn_habref_api").DB)
 
 routes = Blueprint("habref", __name__)
 

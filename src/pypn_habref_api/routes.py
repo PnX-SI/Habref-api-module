@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from utils_flask_sqla.response import json_resp
 
-from pypnnomenclature.models import (
+from pypn_habref_api.models import (
     Habref,
     CorListHabitat,
     AutoCompleteHabitat,
@@ -16,8 +16,8 @@ from pypnnomenclature.models import (
     BibHabrefTypoRel,
 )
 
-from pypnnomenclature.env import DB
 
+from pypn_habref_api.env import DB
 
 routes = Blueprint("habref", __name__)
 

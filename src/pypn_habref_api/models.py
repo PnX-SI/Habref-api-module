@@ -1,13 +1,9 @@
 # coding: utf8
-from __future__ import unicode_literals, print_function, absolute_import, division
-from importlib import import_module
-from flask import current_app
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import select, func
 from utils_flask_sqla.serializers import serializable
 
-from pypnnomenclature.env import DB
+from pypn_habref_api.env import DB
+
 
 @serializable
 class BibHabrefTypoRel(DB.Model):

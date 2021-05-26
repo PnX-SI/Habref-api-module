@@ -1,10 +1,6 @@
-from importlib import import_module
+from .models import Habref, TypoRef
 
-from flask import current_app
-
-from pypnnomenclature.models import Habref, TypoRef
-
-from pypnnomenclature.env import MA
+from pypn_habref_api.env import MA
 
 class TypoRefSchema(MA.SQLAlchemyAutoSchema):
     class Meta:

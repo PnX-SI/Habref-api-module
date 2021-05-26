@@ -2,20 +2,26 @@
 CHANGELOG
 =========
 
+0.1.6 (unreleased)
+------------------
+
+**🐛 Corrections**
+
+*
+
 0.1.5 (2020-02-04)
 ------------------
 
 **🐛 Corrections**
 
-* Les dépendances du fichier `requirements.txt` ne sont plus fixées à une version
-
+* Les dépendances du fichier ``requirements.txt`` ne sont plus fixées à une version
 
 0.1.4 (2020-10-21)
 ------------------
 
 **🚀 Nouveautés**
 
-* La route `/habitats/autocomplete` n'a plus de paramètre `id_list` obligatoire
+* La route ``/habitats/autocomplete`` n'a plus de paramètre ``id_list`` obligatoire
 * Ajout de schéma Marshmallow pour la sérialisation 
 * Mise à jour des dépendances Python (psycopg2 et SQLAlchemy)
 

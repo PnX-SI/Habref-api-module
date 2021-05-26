@@ -7,9 +7,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import select, func
 from utils_flask_sqla.serializers import serializable
 
-# get or create the SQLAlchemy DB instance
-DB = current_app.config.get("DB", import_module(".env", "pypn_habref_api").DB)
-
+from pypnnomenclature.env import DB
 
 @serializable
 class BibHabrefTypoRel(DB.Model):

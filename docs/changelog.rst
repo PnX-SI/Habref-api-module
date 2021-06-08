@@ -7,7 +7,7 @@ CHANGELOG
 
 **🚀 Nouveautés**
 
-* Ajout de schéma Marshmallow
+* Ajout de schémas Marshmallow
 
 **🐛 Corrections**
 

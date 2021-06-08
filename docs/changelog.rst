@@ -11,7 +11,7 @@ CHANGELOG
 
 **🐛 Corrections**
 
-* Nouvelle méthode pour importer l'instance `DB` d'un module parent
+* Nouvelle méthode pour importer l'instance ``DB`` d'un module parent
 
 0.1.5 (2020-02-04)
 ------------------

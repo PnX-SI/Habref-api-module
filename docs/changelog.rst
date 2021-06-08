@@ -2,12 +2,16 @@
 CHANGELOG
 =========
 
-0.1.6 (unreleased)
+0.1.6 (2021-06-08)
 ------------------
+
+**🚀 Nouveautés**
+
+* Ajout de schéma Marshmallow
 
 **🐛 Corrections**
 
-*
+* Nouvelle méthode pour importer l'instance `DB` d'un module parent
 
 0.1.5 (2020-02-04)
 ------------------

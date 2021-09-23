@@ -24,11 +24,14 @@ setuptools.setup(
     package_dir={"": "src"},
     install_requires=requirements,
     include_package_data=True,
-    # cmdclass={'install_db': InstallDB},
-    entry_points="""
-        [console_scripts]
-        install_habref_schema=pypn_habref_api.scripts.database:install_schema
-    """,
+    entry_points={
+        'console_scripts': [
+            'install_habref_schema=pypn_habref_api.scripts.database:install_schema',
+        ],
+        'alembic': [
+            'migrations = pypn_habref_api.migrations:versions',
+        ],
+    },
     zip_safe=False,
     classifiers=[
         "Development Status :: 1 - Planning",

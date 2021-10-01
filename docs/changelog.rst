@@ -2,6 +2,13 @@
 CHANGELOG
 =========
 
+0.2.0 (2021-10-01)
+------------------
+
+**🚀 Nouveautés**
+
+* Ajout de migrations Alembic pour installer le schéma ``ref_habitats``
+
 0.1.6 (2021-06-08)
 ------------------
 

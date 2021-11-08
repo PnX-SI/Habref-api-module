@@ -55,6 +55,7 @@ def getSearchInField(field, ilike):
         "No column found in Taxref for {}".format(field), 500
 
 
+
 @routes.route("/habitat/<int:cd_hab>", methods=["GET"])
 @json_resp
 def get_hab(cd_hab):

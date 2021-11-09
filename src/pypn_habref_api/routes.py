@@ -107,15 +107,18 @@ def get_habref_autocomplete():
     search_name = search_name.replace(" ", "%")
     q = q.filter(
         AutoCompleteHabitat.search_name.ilike("%" + search_name + "%")
-    ).order_by(desc("idx_trgm"))
+    )
 
     # filter by typology
     if "cd_typo" in params:
         q = q.filter(AutoCompleteHabitat.cd_typo == params.get("cd_typo"))
 
     limit = request.args.get("limit", 20)
+    # order by lb_code to have first high hierarchy hab first
+    q = q.order_by(AutoCompleteHabitat.lb_code.asc())
+    # order by trigram
+    q = q.order_by(desc("idx_trgm"))
     print(q)
-
     data = q.limit(limit).all()
     if data:
         return [d[0].as_dict() for d in data]

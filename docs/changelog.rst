@@ -2,6 +2,14 @@
 CHANGELOG
 =========
 
+0.2.1 (2021-11-30)
+------------------
+
+**🐛 Corrections**
+
+* Correction de certaine données localisées de Habref
+* Correction de l’ordonnancement des résultats de l’API Habref
+
 0.2.0 (2021-10-01)
 ------------------
 

@@ -2,12 +2,21 @@
 CHANGELOG
 =========
 
-0.2.2 (unreleased)
+0.3.0 (2022-01-04)
 ------------------
+
+**🚀 Nouveautés**
+
+* Possibilité de lancer l’API Habref de manière autonome
+* Possibilité de créer son schéma de base de données de manière autonome
+* Mise en place des tests unitaires
+* Mise en place de l’intégration continue
+* Intégration de la dépendance Utils-Flask-SQLAlchemy en tant que sous-module Git
 
 **🐛 Corrections**
 
-* 
+* Suppression d’anciens fichiers devenus inutiles suite au paquetage
+* Suppression du script d’installation de la base de donnée (remplacé par Alembic)
 
 0.2.1 (2021-11-30)
 ------------------

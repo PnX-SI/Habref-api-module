@@ -1,5 +1,8 @@
 # Habref-api-module
 
+[![pytest](https://github.com/PnX-SI/Habref-api-module/actions/workflows/pytest.yml/badge.svg)](https://github.com/PnX-SI/Habref-api-module/actions/workflows/pytest.yml)
+[![codecov](https://codecov.io/gh/PnX-SI/Habref-api-module/branch/master/graph/badge.svg?token=YM6Q6SO4EI)](https://codecov.io/gh/PnX-SI/Habref-api-module)
+
 API d'interrogation d'Habref : référentiel des typologies d’habitats et de végétation pour la France (https://inpn.mnhn.fr/telechargement/referentiels/habitats).
 
 ## Technologies

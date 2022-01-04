@@ -1,8 +1,10 @@
+python-dotenv
 flask
 flask-marshmallow
 flask-sqlalchemy
+flask-migrate
 marshmallow-sqlalchemy
 marshmallow
 psycopg2
-utils-flask-sqlalchemy
 requests
+utils-flask-sqlalchemy>=0.2.6

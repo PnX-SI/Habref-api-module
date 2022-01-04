@@ -1,0 +1,4 @@
+FLASK_APP=pypn_habref_api:create_app
+FLASK_ENV=development
+FLASK_DEBUG=1
+HABREF_SETTINGS=settings.py

@@ -23,11 +23,11 @@ setuptools.setup(
     packages=setuptools.find_packages("src"),
     package_dir={"": "src"},
     install_requires=requirements,
+    extras_require={
+        'tests': [ 'pytest', 'pytest-flask', ],
+    },
     include_package_data=True,
     entry_points={
-        'console_scripts': [
-            'install_habref_schema=pypn_habref_api.scripts.database:install_schema',
-        ],
         'alembic': [
             'migrations = pypn_habref_api.migrations:versions',
         ],

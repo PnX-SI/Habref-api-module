@@ -1,0 +1,14 @@
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = [
+    "src",
+]
+
+[tool.coverage.run]
+source = [
+    "pypn_habref_api",
+]
+omit = [
+    "*/tests/*",
+    "*/migrations/*",
+]

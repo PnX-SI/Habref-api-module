@@ -2,7 +2,7 @@
 from sqlalchemy import ForeignKey
 from utils_flask_sqla.serializers import serializable
 
-from pypn_habref_api.env import DB
+from pypn_habref_api.env import db as DB
 
 
 @serializable

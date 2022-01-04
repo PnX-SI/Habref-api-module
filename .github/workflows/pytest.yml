@@ -1,0 +1,74 @@
+name: pytest
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+    branches:
+      - master
+      - develop
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "Debian 10"
+            python-version: "3.7"
+            postgres-version: "11-stretch"
+          - name: "Debian 11"
+            python-version: "3.9"
+            postgres-version: "13-bullseye"
+
+    name: ${{ matrix.name }}
+
+    services:
+      postgres:
+        image: postgres:${{ matrix.postgres-version }}
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install \
+          pytest-cov \
+          -e .[tests] \
+          -e file:dependencies/Utils-Flask-SQLAlchemy#egg=utils-flask-sqlalchemy
+    - name: Install database
+      run: |
+        flask db upgrade habitats@head
+        flask db upgrade habitats_inpn_data@head
+      env:
+        HABREF_SETTINGS: test_settings.py
+    - name: Test with pytest
+      run: |
+        pytest -v --cov --cov-report xml
+      env:
+        HABREF_SETTINGS: test_settings.py
+    - name: Upload coverage to Codecov
+      if: ${{ matrix.name == 'Debian 11' }}
+      uses: codecov/codecov-action@v2
+      with:
+        flags: pytest

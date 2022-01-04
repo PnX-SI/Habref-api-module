@@ -15,9 +15,8 @@ from pypn_habref_api.models import (
     CorespHab,
     BibHabrefTypoRel,
 )
+from pypn_habref_api.env import db as DB
 
-
-from pypn_habref_api.env import DB
 
 routes = Blueprint("habref", __name__)
 

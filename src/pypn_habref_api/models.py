@@ -109,6 +109,7 @@ class BibListHabitat(DB.Model):
     __table_args__ = {"schema": "ref_habitats"}
     id_list = DB.Column(DB.Integer, primary_key=True)
     list_name = DB.Column(DB.Unicode)
+    habitats = DB.relationship("Habref", secondary=cor_list_habitat)
 
 
 @serializable

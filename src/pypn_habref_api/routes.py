@@ -97,7 +97,7 @@ def get_habref_autocomplete():
     )
 
     if "id_list" in params:
-        q = q.filter(AutoCompleteHabitat.lists.any(id_list=1))
+        q = q.filter(AutoCompleteHabitat.lists.any(id_list=params["id_list"]))
 
     if "search_name" in params:
         search_name = search_name.replace(" ", "%")

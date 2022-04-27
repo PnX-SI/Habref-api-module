@@ -22,8 +22,7 @@ class CorespHab(DB.Model):
     __tablename__ = "habref_corresp_hab"
     __table_args__ = {"schema": "ref_habitats"}
     cd_corresp_hab = DB.Column(DB.Integer, primary_key=True)
-    cd_hab_entre = DB.Column(
-        DB.Integer, ForeignKey("ref_habitats.habref.cd_hab"))
+    cd_hab_entre = DB.Column(DB.Integer, ForeignKey("ref_habitats.habref.cd_hab"))
     cd_hab_sortie = DB.Column(DB.Integer)
     cd_type_relation = DB.Column(
         DB.Integer, ForeignKey("ref_habitats.bib_habref_typo_rel.cd_type_rel")
@@ -69,6 +68,17 @@ class TypoRef(DB.Model):
     niveau_inpn = DB.Column(DB.Integer)
 
 
+cor_list_habitat = DB.Table(
+    "cor_list_habitat",
+    DB.Column("id_cor_list", DB.Integer, primary_key=True),
+    DB.Column(
+        "id_list", DB.Integer, ForeignKey("ref_habitats.bib_list_habitat.id_list")
+    ),
+    DB.Column("cd_hab", DB.Integer, ForeignKey("ref_habitats.habref.cd_hab")),
+    schema="ref_habitats",
+)
+
+
 @serializable
 class Habref(DB.Model):
     __tablename__ = "habref"
@@ -90,6 +100,7 @@ class Habref(DB.Model):
 
     typo = DB.relationship("TypoRef", lazy="joined")
     correspondances = DB.relationship("CorespHab", lazy="select")
+    lists = DB.relationship("BibListHabitat", secondary=cor_list_habitat)
 
 
 @serializable
@@ -101,16 +112,6 @@ class BibListHabitat(DB.Model):
 
 
 @serializable
-class CorListHabitat(DB.Model):
-    __tablename__ = "cor_list_habitat"
-    __table_args__ = {"schema": "ref_habitats"}
-    id_cor_list = DB.Column(DB.Integer, primary_key=True)
-    id_list = DB.Column(DB.Integer, ForeignKey(
-        "ref_habitats.bib_list_habitat.id_list"))
-    cd_hab = DB.Column(DB.Integer, ForeignKey("ref_habitats.habref.cd_hab"))
-
-
-@serializable
 class AutoCompleteHabitat(DB.Model):
     __tablename__ = "autocomplete_habitat"
     __table_args__ = {"schema": "ref_habitats"}
@@ -119,3 +120,9 @@ class AutoCompleteHabitat(DB.Model):
     lb_code = DB.Column(DB.Unicode)
     lb_nom_typo = DB.Column(DB.Unicode)
     search_name = DB.Column(DB.Unicode)
+    lists = DB.relationship(
+        BibListHabitat,
+        primaryjoin=(cor_list_habitat.c.cd_hab == cd_hab),
+        secondary=cor_list_habitat,
+        secondaryjoin=(cor_list_habitat.c.id_list == BibListHabitat.id_list),
+    )

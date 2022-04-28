@@ -9,7 +9,6 @@ from utils_flask_sqla.response import json_resp
 
 from pypn_habref_api.models import (
     Habref,
-    CorListHabitat,
     AutoCompleteHabitat,
     TypoRef,
     CorespHab,
@@ -54,7 +53,6 @@ def getSearchInField(field, ilike):
         "No column found in Taxref for {}".format(field), 500
 
 
-
 @routes.route("/habitat/<int:cd_hab>", methods=["GET"])
 @json_resp
 def get_hab(cd_hab):
@@ -84,7 +82,7 @@ def get_habref_autocomplete():
 
     .. :quickref: Habref;
 
-    :query id_list int: the id of the habref list 
+    :query id_list int: the id of the habref list
     :query search_name str: the pattern to filter with
     :query cd_typo int: filter by typology
     :query limit int: number of results, default = 20
@@ -99,14 +97,11 @@ def get_habref_autocomplete():
     )
 
     if "id_list" in params:
-        q = q.join(
-            CorListHabitat, CorListHabitat.cd_hab == AutoCompleteHabitat.cd_hab
-        ).filter(CorListHabitat.id_list == params.get("id_list"))
+        q = q.filter(AutoCompleteHabitat.lists.any(id_list=params["id_list"]))
 
-    search_name = search_name.replace(" ", "%")
-    q = q.filter(
-        AutoCompleteHabitat.search_name.ilike("%" + search_name + "%")
-    )
+    if "search_name" in params:
+        search_name = search_name.replace(" ", "%")
+        q = q.filter(AutoCompleteHabitat.search_name.ilike("%" + search_name + "%"))
 
     # filter by typology
     if "cd_typo" in params:
@@ -117,12 +112,11 @@ def get_habref_autocomplete():
     q = q.order_by(AutoCompleteHabitat.lb_code.asc())
     # order by trigram
     q = q.order_by(desc("idx_trgm"))
-    print(q)
     data = q.limit(limit).all()
     if data:
         return [d[0].as_dict() for d in data]
     else:
-        return "No Result", 404
+        return []
 
 
 @routes.route("/typo", methods=["GET"])

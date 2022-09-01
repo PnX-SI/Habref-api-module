@@ -11,14 +11,14 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '62e63cd6135d'
+revision = "62e63cd6135d"
 down_revision = None
-branch_labels = ('habitats',)
+branch_labels = ("habitats",)
 depends_on = None
 
 
 def upgrade():
-    op.execute(importlib.resources.read_text('pypn_habref_api.data', 'habref.sql'))
+    op.execute(importlib.resources.read_text("pypn_habref_api.data", "habref.sql"))
 
 
 def downgrade():

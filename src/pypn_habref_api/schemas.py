@@ -16,4 +16,3 @@ class HabrefSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
 
     typo_ref = ma.Nested(TypoRefSchema, dump_only=True)
-

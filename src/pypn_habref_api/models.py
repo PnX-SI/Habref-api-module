@@ -71,9 +71,7 @@ class TypoRef(DB.Model):
 cor_list_habitat = DB.Table(
     "cor_list_habitat",
     DB.Column("id_cor_list", DB.Integer, primary_key=True),
-    DB.Column(
-        "id_list", DB.Integer, ForeignKey("ref_habitats.bib_list_habitat.id_list")
-    ),
+    DB.Column("id_list", DB.Integer, ForeignKey("ref_habitats.bib_list_habitat.id_list")),
     DB.Column("cd_hab", DB.Integer, ForeignKey("ref_habitats.habref.cd_hab")),
     schema="ref_habitats",
 )

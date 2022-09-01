@@ -11,15 +11,15 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '805442837a68'
-down_revision = '46e91e738845'
+revision = "805442837a68"
+down_revision = "46e91e738845"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
     op.execute(
-    """
+        """
         ALTER TABLE ref_habitats.habref ADD column lb_hab_en_save character varying(500);
         UPDATE ref_habitats.habref 
         SET lb_hab_en_save = lb_auteur;
@@ -31,7 +31,7 @@ def upgrade():
     """
     )
     op.execute(
-    """
+        """
         DELETE FROM ref_habitats.autocomplete_habitat;
         INSERT INTO ref_habitats.autocomplete_habitat
         SELECT 
@@ -44,8 +44,6 @@ def upgrade():
         JOIN ref_habitats.typoref t ON t.cd_typo = h.cd_typo;
     """
     )
-
-    
 
 
 def downgrade():

@@ -67,9 +67,7 @@ def get_hab(cd_hab):
     one_hab = DB.session.query(Habref).get(cd_hab).as_dict(True)
     if "correspondances" in one_hab:
         for cor in one_hab["correspondances"]:
-            hab_sortie = (
-                DB.session.query(Habref).get(cor["cd_hab_sortie"]).as_dict(True)
-            )
+            hab_sortie = DB.session.query(Habref).get(cor["cd_hab_sortie"]).as_dict(True)
             cor["habref"] = hab_sortie
     return one_hab
 
@@ -161,9 +159,7 @@ def get_coresp(cd_hab):
     """
     q = (
         DB.session.query(CorespHab, BibHabrefTypoRel, Habref, TypoRef)
-        .join(
-            BibHabrefTypoRel, CorespHab.cd_type_relation == BibHabrefTypoRel.cd_type_rel
-        )
+        .join(BibHabrefTypoRel, CorespHab.cd_type_relation == BibHabrefTypoRel.cd_type_rel)
         .join(Habref, Habref.cd_hab == CorespHab.cd_hab_sortie)
         .join(TypoRef, TypoRef.cd_typo == Habref.cd_typo)
         .filter(CorespHab.cd_hab_entre == cd_hab)

@@ -2,6 +2,20 @@
 CHANGELOG
 =========
 
+0.3.1 (2022-09-01)
+------------------
+
+**🚀 Nouveautés**
+
+* Mise à jour de Utils-Flask-SQLAlchemy en version 0.3.0
+* Le code est désormais formaté avec Black et une Github Action y veille.
+
+**🐛 Corrections**
+
+* Correction des modèles
+* Correction de l’auto-complétion et ajout d’un test unitaire sur celle ci
+
+
 0.3.0 (2022-01-04)
 ------------------
 

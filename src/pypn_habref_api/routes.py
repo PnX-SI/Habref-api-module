@@ -13,6 +13,7 @@ from pypn_habref_api.models import (
     TypoRef,
     CorespHab,
     BibHabrefTypoRel,
+    BibListHabitat,
 )
 from pypn_habref_api.env import db as DB
 
@@ -132,15 +133,9 @@ def get_typo():
 
     q = DB.session.query(TypoRef)
 
-    if params.get("id_list"):
-        sub_q = (
-            DB.session.query(Habref.cd_typo)
-            .select_from(Habref)
-            .join(CorListHabitat, CorListHabitat.cd_hab == Habref.cd_hab)
-            .distinct(Habref.cd_typo)
-            .filter(CorListHabitat.id_list == params.get("id_list"))
-        )
-        q = q.filter(TypoRef.cd_typo.in_(sub_q))
+    id_list = params.get("id_list", type=int)
+    if id_list:
+        q = q.filter(TypoRef.habitats.any(Habref.lists.any(BibListHabitat.id_list == id_list)))
     data = q.order_by(TypoRef.lb_nom_typo).all()
 
     return [d.as_dict() for d in data]

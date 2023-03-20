@@ -67,6 +67,8 @@ class TypoRef(DB.Model):
     cd_typo_sortie = DB.Column(DB.Integer)
     niveau_inpn = DB.Column(DB.Integer)
 
+    habitats = DB.relationship("Habref", back_populates="typo")
+
 
 cor_list_habitat = DB.Table(
     "cor_list_habitat",
@@ -96,7 +98,7 @@ class Habref(DB.Model):
     france = DB.Column(DB.Unicode)
     lb_description = DB.Column(DB.Unicode)
 
-    typo = DB.relationship("TypoRef", lazy="joined")
+    typo = DB.relationship("TypoRef", lazy="joined", back_populates="habitats")
     correspondances = DB.relationship("CorespHab", lazy="select")
     lists = DB.relationship("BibListHabitat", secondary=cor_list_habitat)
 

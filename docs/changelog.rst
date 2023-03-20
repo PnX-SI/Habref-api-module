@@ -2,6 +2,18 @@
 CHANGELOG
 =========
 
+0.3.2 (2023-03-20)
+------------------
+
+**🚀 Nouveautés**
+
+* Mise à jour de Utils-Flask-SQLAlchemy en version 0.3.2
+* Ajout de SQLAlchemy version 1.4 dans les tests
+
+**🐛 Corrections**
+
+* Correction d'une régression du filtre des topologies par liste d'habitats (https://github.com/PnX-SI/GeoNature/issues/2405)
+
 0.3.1 (2022-09-01)
 ------------------
 

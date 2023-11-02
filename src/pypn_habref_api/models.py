@@ -126,5 +126,5 @@ class AutoCompleteHabitat(DB.Model):
         primaryjoin=(cor_list_habitat.c.cd_hab == cd_hab),
         secondary=cor_list_habitat,
         secondaryjoin=(cor_list_habitat.c.id_list == BibListHabitat.id_list),
-        overlaps="lists, habitats"
+        overlaps="lists",
     )

@@ -100,7 +100,9 @@ class Habref(DB.Model):
 
     typo = DB.relationship("TypoRef", lazy="joined", back_populates="habitats")
     correspondances = DB.relationship("CorespHab", lazy="select")
-    lists = DB.relationship("BibListHabitat", secondary=cor_list_habitat)
+    lists = DB.relationship(
+        "BibListHabitat", secondary=cor_list_habitat, back_populates="habitats"
+    )
 
 
 @serializable
@@ -109,7 +111,7 @@ class BibListHabitat(DB.Model):
     __table_args__ = {"schema": "ref_habitats"}
     id_list = DB.Column(DB.Integer, primary_key=True)
     list_name = DB.Column(DB.Unicode)
-    habitats = DB.relationship("Habref", secondary=cor_list_habitat)
+    habitats = DB.relationship("Habref", secondary=cor_list_habitat, back_populates="lists")
 
 
 @serializable
@@ -125,5 +127,5 @@ class AutoCompleteHabitat(DB.Model):
         BibListHabitat,
         primaryjoin=(cor_list_habitat.c.cd_hab == cd_hab),
         secondary=cor_list_habitat,
-        secondaryjoin=(cor_list_habitat.c.id_list == BibListHabitat.id_list),
+        viewonly=True,
     )

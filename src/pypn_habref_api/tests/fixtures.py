@@ -8,7 +8,7 @@ from .conftest import app
 @pytest.fixture(scope="session")
 def bib_list(app):
     new_list = BibListHabitat(list_name="list test")
-    habitat = Habref.query.limit(1).scalar()
+    habitat = db.session.execute(db.select(Habref).limit(1)).scalar_one()
     new_list.habitats.append(habitat)
     db.session.add(new_list)
     return new_list

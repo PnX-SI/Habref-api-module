@@ -2,6 +2,16 @@
 CHANGELOG
 =========
 
+0.3.3 (2024-01-29)
+------------------
+
+**🚀 Nouveautés**
+
+* Mise à jour vers SQLAlchemy 1.4 (#12)
+* Abandon du support de Debian 10 (#12)
+* Mise à jour du linter Black à la version 24 (#14)
+
+
 0.3.2 (2023-03-20)
 ------------------
 

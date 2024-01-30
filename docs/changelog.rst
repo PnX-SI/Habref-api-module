@@ -2,6 +2,13 @@
 CHANGELOG
 =========
 
+0.4.1 (2024-01-30)
+------------------
+
+**🐛 Corrections**
+
+* Mise à jour de Utils-Flask-SQLAlchemy
+
 0.4.0 (2024-01-29)
 ------------------
 

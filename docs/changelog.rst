@@ -2,12 +2,19 @@
 CHANGELOG
 =========
 
+0.4. (2025-05-22)
+------------------
+
+**🚀 Nouveautés**
+
+* Mise à jour de Utils-Flask-SQLAlchemy en version 0.4.2
+
 0.4.1 (2024-01-30)
 ------------------
 
 **🐛 Corrections**
 
-* Mise à jour de Utils-Flask-SQLAlchemy
+* Mise à jour de Utils-Flask-SQLAlchemy en version 0.4.1
 
 0.4.0 (2024-01-29)
 ------------------

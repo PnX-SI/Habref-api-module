@@ -97,13 +97,14 @@ def empty_table(table_name, db, schema=""):
 
     # Récupère les foreign keys
     foreign_keys = inspector.get_foreign_keys(table_name, schema=schema)
+    db.session.execute("SET session_replication_role = 'replica'")
     for fk in foreign_keys:
         constraint_name = fk["name"]
         if constraint_name:  # Vérifie que le nom existe
             db.session.execute(
                 f"ALTER TABLE {schema}.{table_name} DROP CONSTRAINT {constraint_name} CASCADE"
             )
-    db.session.execute(f"TRUNCATE TABLE {schema}.{table_name} CASCADE")
+    db.session.execute(f"DELETE FROM {schema}.{table_name}")
     return foreign_keys
 
 

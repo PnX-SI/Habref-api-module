@@ -185,30 +185,20 @@ table_files = {
 def import_habref(logger, num_version, habref_archive_name):
     with open_remote_file(base_url, habref_archive_name, open_fct=ZipFile) as archive:
         for table, value in table_files.items():
-
-            constraints = empty_table(
-                table,
-                db,
-                schema="ref_habitats",
-            )
             logger.info(f"Insert HABREF v{num_version} {table}…")
             with archive.open(value["filename"]) as f:
-
+                db.execute(
+                    f"CREATE TABLE ref_habitats.tmp_{table} AS TABLE ref_habitats.{table} WITH NO DATA;"
+                )
                 copy_from_csv(
                     f,
-                    table,
+                    f"tmp_{table}",
                     value["table_fields"],
                     encoding="UTF-8",
                     delimiter=";",
                     schema="ref_habitats",
                     db=db,
                 )
-            restore_constraints(
-                table,
-                db,
-                constraints,
-                schema="ref_habitats",
-            )
 
 
 @click.command()

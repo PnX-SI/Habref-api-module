@@ -125,3 +125,16 @@ def restore_constraints(table_name, db, constraints, schema=""):
             db.session.execute(
                 f"ALTER TABLE {schema}.{table_name} ADD CONSTRAINT {constraint.name} FOREIGN KEY {cols} REFERENCES {constraint.references[0].table.name}({ref_cols})"
             )
+
+
+def detect_changes():
+    pass
+
+
+def detect_missing_cd_hab():
+    op.create_table(
+        "tmp_missing_cd_hab",
+        Column("cd_hab", Integer, primary_key=True),
+        schema="ref_habitats",
+    )
+    pass

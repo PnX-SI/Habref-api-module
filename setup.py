@@ -34,6 +34,9 @@ setuptools.setup(
         "alembic": [
             "migrations = pypn_habref_api.migrations:versions",
         ],
+        "flask.commands": [
+            "habref = pypn_habref_api.commands.habref:habref",
+        ],
     },
     zip_safe=False,
     classifiers=[

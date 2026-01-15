@@ -18,6 +18,31 @@ class BibHabrefTypoRel(DB.Model):
 
 
 @serializable
+class BibHabrefStatuts(DB.Model):
+    __tablename__ = "bib_habref_statuts"
+    __table_args__ = {"schema": "ref_habitats"}
+    statut = DB.Column(DB.Unicode, primary_key=True)
+    description = DB.Column(DB.Unicode)
+    definition = DB.Column(DB.Unicode)
+    ordre = DB.Column(DB.Integer)
+
+
+@serializable
+class HabrefSources(DB.Model):
+    __tablename__ = "habref_sources"
+    __table_args__ = {"schema": "ref_habitats"}
+    cd_source = DB.Column(DB.Integer, primary_key=True)
+    cd_doc = DB.Column(DB.Integer)
+    type_source = DB.Column(DB.Unicode)
+    auteur_source = DB.Column(DB.Unicode)
+    date_source = DB.Column(DB.Integer)
+    lb_source = DB.Column(DB.Unicode)
+    lb_source_complet = DB.Column(DB.Unicode)
+    titre = DB.Column(DB.Unicode)
+    link = DB.Column(DB.Unicode)
+
+
+@serializable
 class CorespHab(DB.Model):
     __tablename__ = "habref_corresp_hab"
     __table_args__ = {"schema": "ref_habitats"}
@@ -36,6 +61,68 @@ class CorespHab(DB.Model):
     diffusion = DB.Column(DB.Boolean)
 
     type_rel = DB.relationship("BibHabrefTypoRel", lazy="select")
+
+
+@serializable
+class HabrefCorrespTaxon(DB.Model):
+    __tablename__ = "habref_corresp_taxon"
+    __table_args__ = {"schema": "ref_habitats"}
+    cd_corresp_tax = DB.Column(DB.Integer, primary_key=True)
+    cd_hab_entre = DB.Column(DB.Integer)
+    cd_nom = DB.Column(DB.Integer)
+    cd_type_relation = DB.Column(DB.Integer)
+    lb_condition = DB.Column(DB.Unicode)
+    lb_remarques = DB.Column(DB.Unicode)
+    nom_cite = DB.Column(DB.Unicode)
+    validite = DB.Column(DB.Boolean)
+
+
+@serializable
+class CorHabrefTerrStatut(DB.Model):
+    __tablename__ = "cor_habref_terr_statut"
+    __table_args__ = {"schema": "ref_habitats"}
+    cd_hab_ter = DB.Column(DB.Integer, primary_key=True)
+    cd_hab = DB.Column(DB.Integer)
+    cd_sig_terr = DB.Column(DB.Unicode)
+    cd_statut_presence = DB.Column(DB.Unicode)
+
+
+@serializable
+class TyporefFields(DB.Model):
+    __tablename__ = "typoref_fields"
+    __table_args__ = {"schema": "ref_habitats"}
+    cd_hab_field = DB.Column(DB.Integer, primary_key=True)
+    cd_typo = DB.Column(DB.Integer)
+    lb_hab_field = DB.Column(DB.Unicode)
+    format_hab_field = DB.Column(DB.Unicode)
+    descript_hab_field = DB.Column(DB.Unicode)
+    ordre_hab_field = DB.Column(DB.Integer)
+    length_hab_field = DB.Column(DB.Integer)
+    lb_label = DB.Column(DB.Unicode)
+
+
+@serializable
+class CorHabrefDescription(DB.Model):
+    __tablename__ = "cor_habref_description"
+    __table_args__ = {"schema": "ref_habitats"}
+    cd_hab_description = DB.Column(DB.Integer, primary_key=True)
+    cd_hab = DB.Column(DB.Integer)
+    cd_hab_field = DB.Column(DB.Integer)
+    cd_typo = DB.Column(DB.Integer)
+    lb_code = DB.Column(DB.Unicode)
+    lb_hab_field = DB.Column(DB.Unicode)
+    valeurs = DB.Column(DB.Unicode)
+
+
+@serializable
+class CorHabSource(DB.Model):
+    __tablename__ = "cor_hab_source"
+    __table_args__ = {"schema": "ref_habitats"}
+    cd_hab_lien_source = DB.Column(DB.Integer, primary_key=True)
+    cd = DB.Column(DB.Integer)
+    type_lien = DB.Column(DB.Unicode)
+    cd_source = DB.Column(DB.Integer)
+    origine = DB.Column(DB.Unicode)
 
 
 @serializable

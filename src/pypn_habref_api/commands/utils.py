@@ -138,3 +138,124 @@ def detect_missing_cd_hab():
         schema="ref_habitats",
     )
     pass
+
+
+def test():
+    inspector = sa_inspect(db.engine)
+
+    # Trouve toutes les tables qui référencent cette table
+    broken_refs = []
+
+    foreign_keys = inspector.get_foreign_keys(table_name, schema=schema)
+
+    # Désactive les contraintes FK
+    db.session.execute(text("SET session_replication_role = 'replica'"))
+    try:
+        # Vide la table
+        db.session.execute(text(f"TRUNCATE TABLE {table_full_name}"))
+        db.session.commit()
+
+        # Charge les nouvelles données si une fonction est fournie
+        if data_loader_func:
+            data_loader_func(db)
+
+        # Réactive les contraintes
+        db.session.execute(text("SET session_replication_role = 'origin'"))
+        db.session.commit()
+
+        # Vérifie les références cassées
+        broken = check_broken_references(table_name, db, schema)
+        if broken:
+            print("⚠️ ATTENTION : Références cassées détectées !")
+            for ref in broken:
+                print(
+                    f"  - Table {ref['table']}.{ref['column']} : {ref['broken_count']} lignes orphelines"
+                )
+            return False, broken
+
+        print("✓ Aucune référence cassée détectée")
+        return True, foreign_keys
+
+    except Exception as e:
+        db.session.rollback()
+        db.session.execute(text("SET session_replication_role = 'origin'"))
+        db.session.commit()
+        raise e
+
+
+def get_referencing_tables(table_name, db, schema=""):
+    """Trouve toutes les tables (tous schémas) qui ont des FK pointant vers table_name"""
+    inspector = sa_inspect(db.engine)
+    referencing_tables = []
+
+    all_schemas = inspector.get_schema_names()
+
+    for other_schema in all_schemas:
+        if other_schema in ("pg_catalog", "information_schema", "pg_toast"):
+            continue
+
+        try:
+            for other_table in inspector.get_table_names(schema=other_schema):
+                fks = inspector.get_foreign_keys(other_table, schema=other_schema)
+
+                for fk in fks:
+                    referred_schema = fk.get("referred_schema", other_schema)
+
+                    if fk["referred_table"] == table_name and (
+                        not schema or referred_schema == schema
+                    ):
+                        referencing_tables.append(
+                            {
+                                "schema": other_schema,
+                                "table": other_table,
+                                "constraint_name": fk["name"],
+                                "fk_column": fk["constrained_columns"][0],
+                                "ref_column": fk["referred_columns"][0],
+                                "referred_schema": referred_schema,
+                            }
+                        )
+        except Exception as e:
+            print(f"Impossible d'inspecter le schéma {other_schema}: {e}")
+            continue
+
+    return referencing_tables
+
+
+def check_broken_references():
+    inspector = sa_inspect(db.engine)
+
+    # Trouve toutes les tables qui référencent cette table
+    broken_refs = []
+
+    for other_table in inspector.get_table_names(schema=schema):
+        fks = inspector.get_foreign_keys(other_table, schema=schema)
+
+        for fk in fks:
+            # Si cette FK pointe vers notre table
+            if fk["referred_table"] == table_name:
+                fk_column = fk["constrained_columns"][0]
+                ref_column = fk["referred_columns"][0]
+
+                table_full = f"{schema}.{other_table}" if schema else other_table
+                ref_full = f"{schema}.{table_name}" if schema else table_name
+
+                # Requête pour trouver les orphelins
+                query = text(
+                    f"""
+                    SELECT COUNT(*) as broken_count
+                    FROM {table_full} t
+                    WHERE t.{fk_column} IS NOT NULL
+                    AND NOT EXISTS (
+                        SELECT 1 FROM {ref_full} r 
+                        WHERE r.{ref_column} = t.{fk_column}
+                    )
+                """
+                )
+
+                result = db.session.execute(query).fetchone()
+                if result[0] > 0:
+                    broken_refs.append(
+                        {"table": other_table, "column": fk_column, "broken_count": result[0]}
+                    )
+
+    return broken_refs

@@ -17,7 +17,6 @@ from pypn_habref_api.models import (
 )
 from pypn_habref_api.env import db as DB
 
-
 routes = Blueprint("habref", __name__)
 
 

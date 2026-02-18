@@ -7,5 +7,5 @@ marshmallow-sqlalchemy
 marshmallow
 psycopg2
 requests
-utils-flask-sqlalchemy>=0.4.1
+utils-flask-sqlalchemy>=0.4.5
 sqlalchemy<2

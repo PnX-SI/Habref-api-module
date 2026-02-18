@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.4.4 (2026-02-18)
+
+**🚀 Nouveautés**
+
+- Mise à jour de Utils-Flask-SQLAlchemy en version 0.4.5 (par  @jacquesfize)
+
 ## 0.4.3 (2026-01-14)
 
 **🚀 Nouveautés**

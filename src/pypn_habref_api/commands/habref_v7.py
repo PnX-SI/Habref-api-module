@@ -13,12 +13,20 @@ from flask.cli import with_appcontext
 from alembic import op
 
 from utils_flask_sqla.migrations.utils import open_remote_file
-from .utils import copy_from_csv, empty_table, restore_constraints
+from .utils import (
+    copy_from_csv,
+    empty_table,
+    restore_constraints,
+    delete_tmp_tables,
+    compare_tables_on_column,
+    get_referencing_tables,
+)
 
 base_url = "https://geonature.fr/data/inpn/habitats/"
 table_files = {
     "typoref": {
         "filename": "TYPOREF_70.csv",
+        "unique_column": "cd_typo",
         "table_fields": {
             "cd_typo": "CD_TYPO",
             "cd_table": "CD_TABLE",
@@ -45,6 +53,7 @@ table_files = {
     },
     "bib_habref_typo_rel": {
         "filename": "HABREF_TYPE_REL_70.csv",
+        "unique_column": "cd_type_rel",
         "table_fields": {
             "cd_type_rel": "CD_TYPE_REL",
             "lb_type_rel": "LB_TYPE_REL",
@@ -58,6 +67,7 @@ table_files = {
     },
     "bib_habref_statuts": {
         "filename": "HABREF_STATUTS.csv",
+        "unique_column": "statut",
         "table_fields": {
             "statut": "STATUT",
             "description": "DESCRIPTION",
@@ -67,6 +77,7 @@ table_files = {
     },
     "habref_sources": {
         "filename": "HABREF_SOURCES_70.csv",
+        "unique_column": "cd_source",
         "table_fields": {
             "cd_source": "CD_SOURCE",
             "cd_doc": "CD_DOC",
@@ -83,6 +94,7 @@ table_files = {
     },
     "habref": {
         "filename": "HABREF_70.csv",
+        "unique_column": "cd_hab",
         "table_fields": {
             "cd_hab": "CD_HAB",
             "fg_validite": "FG_VALIDITE",
@@ -102,6 +114,7 @@ table_files = {
     },
     "habref_corresp_hab": {
         "filename": "HABREF_CORRESP_HAB_70.csv",
+        "unique_column": "cd_corresp_hab",
         "table_fields": {
             "cd_corresp_hab": "CD_CORRESP_HAB",
             "cd_hab_entre": "CD_HAB_ENTRE",
@@ -116,6 +129,7 @@ table_files = {
     },
     "habref_corresp_taxon": {
         "filename": "HABREF_CORRESP_TAXON_70.csv",
+        "unique_column": "cd_corresp_tax",
         "table_fields": {
             "cd_corresp_tax": "CD_CORRESP_TAX",
             "cd_hab_entre": "CD_HAB_ENTRE",
@@ -131,6 +145,7 @@ table_files = {
     },
     "cor_habref_terr_statut": {
         "filename": "HABREF_TERR_70.csv",
+        "unique_column": "cd_hab_ter",
         "table_fields": {
             "cd_hab_ter": "CD_HAB_TERR",
             "cd_hab": "CD_HAB",
@@ -142,6 +157,7 @@ table_files = {
     },
     "typoref_fields": {
         "filename": "TYPOREF_FIELDS_70.csv",
+        "unique_column": "cd_hab_field",
         "table_fields": {
             "cd_hab_field": "CD_HAB_FIELD",
             "cd_typo": "CD_TYPO",
@@ -157,6 +173,7 @@ table_files = {
     },
     "cor_habref_description": {
         "filename": "HABREF_DESCRIPTION_70.csv",
+        "unique_column": "cd_hab_description",
         "table_fields": {
             "cd_hab_description": "CD_HAB_DESCRIPTION",
             "cd_hab": "CD_HAB",
@@ -169,6 +186,7 @@ table_files = {
     },
     "cor_hab_source": {
         "filename": "HABREF_LIEN_SOURCES_70.csv",
+        "unique_column": "cd_hab_lien_source",
         "table_fields": {
             "cd_hab_lien_source": "CD_HAB_LIEN_SOURCE",
             "cd": "CD",
@@ -183,11 +201,12 @@ table_files = {
 
 
 def import_habref(logger, num_version, habref_archive_name):
+    delete_tmp_tables(table_files)
     with open_remote_file(base_url, habref_archive_name, open_fct=ZipFile) as archive:
         for table, value in table_files.items():
             logger.info(f"Insert HABREF v{num_version} {table}…")
             with archive.open(value["filename"]) as f:
-                db.execute(
+                db.session.execute(
                     f"CREATE TABLE ref_habitats.tmp_{table} AS TABLE ref_habitats.{table} WITH NO DATA;"
                 )
                 copy_from_csv(
@@ -199,6 +218,14 @@ def import_habref(logger, num_version, habref_archive_name):
                     schema="ref_habitats",
                     db=db,
                 )
+                diff = compare_tables_on_column(
+                    "ref_habitats", table, f"tmp_{table}", value["unique_column"]
+                )
+                print("TEEEEEEEEEESSSSSTTT")
+                print("table : ", table)
+                print("référence : ", get_referencing_tables(table, "ref_habitats"))
+                # print(diff[f"only_in_{table}"])
+                # print(diff[f"only_in_tmp_{table}"])
 
 
 @click.command()

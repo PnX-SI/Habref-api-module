@@ -10,6 +10,8 @@ from sqlalchemy.schema import (
     ForeignKeyConstraint,
 )
 
+from pypn_habref_api.env import db
+
 
 def get_csv_field_names(f, encoding, delimiter):
     if encoding == "WIN1252":  # postgresql encoding
@@ -75,7 +77,12 @@ def copy_from_csv(
         f,
     )
 
-    testTable = Table(final_table_name, db.metadata, schema=schema, autoload_with=engine)
+    print("final_table_name : ", final_table_name)
+    print("schema : ", schema)
+
+    testTable = Table(
+        final_table_name, db.metadata, schema=schema, autoload_with=db.session.connection()
+    )
 
     for col in testTable.columns:
         if col.name in table_fields:
@@ -183,7 +190,7 @@ def test():
         raise e
 
 
-def get_referencing_tables(table_name, db, schema=""):
+def get_referencing_tables(table_name, schema=""):
     """Trouve toutes les tables (tous schémas) qui ont des FK pointant vers table_name"""
     inspector = sa_inspect(db.engine)
     referencing_tables = []
@@ -259,3 +266,43 @@ def check_broken_references():
                     )
 
     return broken_refs
+
+
+def delete_tmp_tables(table_files):
+    for table, value in table_files.items():
+        db.session.execute(f"DROP TABLE ref_habitats.tmp_{table}")
+
+
+def compare_tables_on_column(schema, table1, table2, column="cd_hab"):
+
+    query = f"""
+        SELECT '{table1}' as source, {column}
+        FROM {schema}.{table1}
+        EXCEPT
+        SELECT '{table1}' as source, {column}
+        FROM {schema}.{table2}
+
+        UNION ALL
+
+        SELECT '{table2}' as source, {column}
+        FROM {schema}.{table2}
+        EXCEPT
+        SELECT '{table2}' as source, {column}
+        FROM {schema}.{table1}
+    """
+
+    result = db.session.execute(query)
+
+    only_in_table1 = []
+    only_in_table2 = []
+
+    for row in result:
+        if row.source == table1:
+            only_in_table1.append(row[column])
+        else:
+            only_in_table2.append(row[column])
+
+    return {
+        f"only_in_{table1}": only_in_table1,
+        f"only_in_{table2}": only_in_table2,
+    }

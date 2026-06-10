@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        debian-version: ["11", "12", "13"]
+        debian-version: ["12", "13"]
         sqlalchemy-version: ["1.4"]
         include:
           - debian-version: "12"

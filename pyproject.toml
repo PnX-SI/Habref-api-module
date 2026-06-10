@@ -38,13 +38,10 @@ dependencies = [
 tests = ["pytest", "pytest-flask", "pytest-cov", "jsonschema"]
 
 [project.urls]
-Homepage = "https://github.com/PnX-SI/RefGeo"
+Homepage = "https://github.com/PnX-SI/Habref-api-module"
 
 [project.entry-points."alembic"]
 migrations = "pypn_habref_api.migrations:versions"
-
-[project.entry-points."flask.commands"]
-habref = "pypn_habref_api.commands:habref"
 
 [tool.setuptools]
 package-dir = { "" = "src" }

@@ -3,9 +3,9 @@ requires = ["setuptools>=77.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pypn-ref-geo"
+name = "pypn_habref_api"
 dynamic = ["version"]
-description = "Référentiel géographique"
+description = "Python lib related to Habref referential (INPN)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "GNU AGPLv3" }
@@ -25,13 +25,12 @@ classifiers = [
 ]
 dependencies = [
     "alembic",
-    "flask>=3.0",
+    "flask",
     "flask-sqlalchemy",
     "flask-marshmallow",
     "python-dotenv",
     "sqlalchemy>=1.4,<2",
     "utils-flask-sqlalchemy>=0.4.2",
-    "utils-flask-sqlalchemy-geo>=0.3.3",
     "psycopg2",
 ]
 
@@ -39,23 +38,20 @@ dependencies = [
 tests = ["pytest", "pytest-flask", "pytest-cov", "jsonschema"]
 
 [project.urls]
-Homepage = "https://github.com/PnX-SI/RefGeo"
+Homepage = "https://github.com/PnX-SI/Habref-api-module"
 
 [project.entry-points."alembic"]
-migrations = "ref_geo.migrations:versions"
-
-[project.entry-points."flask.commands"]
-ref_geo = "ref_geo.commands:ref_geo"
+migrations = "pypn_habref_api.migrations:versions"
 
 [tool.setuptools]
 package-dir = { "" = "src" }
-packages = ["ref_geo"]
+packages = ["pypn_habref_api"]
 
 [tool.setuptools.dynamic]
 version = { file = "VERSION" }
 
 [tool.setuptools.package-data]
-"ref_geo.migrations" = ["data/*.sql"]
+"pypn_habref_api.migrations" = ["data/*.sql"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"

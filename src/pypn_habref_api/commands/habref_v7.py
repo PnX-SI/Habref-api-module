@@ -5,6 +5,7 @@ import logging
 from pypn_habref_api.models import BibListHabitat, Habref
 from pypn_habref_api.env import db
 
+from sqlalchemy import text as sa_text
 from sqlalchemy.schema import Table, MetaData, PrimaryKeyConstraint
 
 import click
@@ -13,14 +14,7 @@ from flask.cli import with_appcontext
 from alembic import op
 
 from utils_flask_sqla.migrations.utils import open_remote_file
-from .utils import (
-    copy_from_csv,
-    empty_table,
-    restore_constraints,
-    delete_tmp_tables,
-    compare_tables_on_column,
-    get_referencing_tables,
-)
+from .utils import copy_from_csv, empty_table, restore_constraints, export_orphans_to_csv
 
 base_url = "https://geonature.fr/data/inpn/habitats/"
 table_files = {
@@ -206,6 +200,7 @@ def import_habref(logger, num_version, habref_archive_name):
         for table, value in table_files.items():
             logger.info(f"Insert HABREF v{num_version} {table}…")
             with archive.open(value["filename"]) as f:
+                db.session.execute(f"DROP TABLE IF EXISTS ref_habitats.tmp_{table};")
                 db.session.execute(
                     f"CREATE TABLE ref_habitats.tmp_{table} AS TABLE ref_habitats.{table} WITH NO DATA;"
                 )
@@ -238,6 +233,66 @@ def import_v07():
         num_version="07",
         habref_archive_name="HABREF_70.zip",
     )
+
+    logger.info("Détection des données orphelines…")
+    nb = export_orphans_to_csv(
+        ref_table="habref",
+        new_ref_table="tmp_habref",
+        pk_col="cd_hab",
+        output_path="tmp/habref/orphans_habref.csv",
+        db=db,
+        schema="ref_habitats",
+        exclude_tables=list(table_files.keys()),
+    )
+    if nb:
+        logger.warning(f"{nb} valeur(s) orpheline(s) détectée(s), voir {orphans_output}")
+    else:
+        logger.info("Aucune donnée orpheline détectée.")
+
+    logger.info("Committing…")
+    db.session.commit()
+
+
+def apply_habref(logger):
+    db.session.execute(sa_text("SET session_replication_role = 'replica'"))
+
+    for table in reversed(list(table_files.keys())):
+        logger.info(f"Vidage de {table}…")
+        db.session.execute(sa_text(f"DELETE FROM ref_habitats.{table}"))
+
+    for table in table_files.keys():
+        logger.info(f"Remplissage de {table} depuis tmp_{table}…")
+        db.session.execute(
+            sa_text(f"INSERT INTO ref_habitats.{table} SELECT * FROM ref_habitats.tmp_{table}")
+        )
+
+    logger.info("Remplissage de autocomplete_habitat…")
+    db.session.execute(sa_text("DELETE FROM ref_habitats.autocomplete_habitat"))
+    db.session.execute(sa_text("""
+        INSERT INTO ref_habitats.autocomplete_habitat
+        SELECT
+            cd_hab,
+            h.cd_typo,
+            lb_code,
+            lb_nom_typo,
+            concat(lb_code, ' - ', lb_hab_fr, ' ', lb_hab_fr_complet)
+        FROM ref_habitats.habref h
+        JOIN ref_habitats.typoref t ON t.cd_typo = h.cd_typo
+    """))
+
+    db.session.execute(sa_text("SET session_replication_role = 'origin'"))
+
+    for table in reversed(list(table_files.keys())):
+        logger.info(f"Suppression de tmp_{table}…")
+        db.session.execute(sa_text(f"DROP TABLE IF EXISTS ref_habitats.tmp_{table}"))
+
+
+@click.command()
+@with_appcontext
+def apply_v07():
+    logger = logging.getLogger()
+
+    apply_habref(logger)
 
     logger.info("Committing…")
     db.session.commit()

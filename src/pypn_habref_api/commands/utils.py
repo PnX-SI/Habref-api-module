@@ -1,8 +1,10 @@
+import csv
+import os
 from csv import DictReader
 from io import TextIOWrapper
 
 import sqlalchemy as sa
-from sqlalchemy import inspect as sa_inspect
+from sqlalchemy import inspect as sa_inspect, text
 from sqlalchemy.schema import (
     Table,
     MetaData,
@@ -77,12 +79,7 @@ def copy_from_csv(
         f,
     )
 
-    print("final_table_name : ", final_table_name)
-    print("schema : ", schema)
-
-    testTable = Table(
-        final_table_name, db.metadata, schema=schema, autoload_with=db.session.connection()
-    )
+    testTable = Table(final_table_name, MetaData(), schema=schema, autoload_with=db.session.connection())
 
     for col in testTable.columns:
         if col.name in table_fields:
@@ -134,80 +131,22 @@ def restore_constraints(table_name, db, constraints, schema=""):
             )
 
 
-def detect_changes():
-    pass
-
-
-def detect_missing_cd_hab():
-    op.create_table(
-        "tmp_missing_cd_hab",
-        Column("cd_hab", Integer, primary_key=True),
-        schema="ref_habitats",
-    )
-    pass
-
-
-def test():
-    inspector = sa_inspect(db.engine)
-
-    # Trouve toutes les tables qui référencent cette table
-    broken_refs = []
-
-    foreign_keys = inspector.get_foreign_keys(table_name, schema=schema)
-
-    # Désactive les contraintes FK
-    db.session.execute(text("SET session_replication_role = 'replica'"))
-    try:
-        # Vide la table
-        db.session.execute(text(f"TRUNCATE TABLE {table_full_name}"))
-        db.session.commit()
-
-        # Charge les nouvelles données si une fonction est fournie
-        if data_loader_func:
-            data_loader_func(db)
-
-        # Réactive les contraintes
-        db.session.execute(text("SET session_replication_role = 'origin'"))
-        db.session.commit()
-
-        # Vérifie les références cassées
-        broken = check_broken_references(table_name, db, schema)
-        if broken:
-            print("⚠️ ATTENTION : Références cassées détectées !")
-            for ref in broken:
-                print(
-                    f"  - Table {ref['table']}.{ref['column']} : {ref['broken_count']} lignes orphelines"
-                )
-            return False, broken
-
-        print("✓ Aucune référence cassée détectée")
-        return True, foreign_keys
-
-    except Exception as e:
-        db.session.rollback()
-        db.session.execute(text("SET session_replication_role = 'origin'"))
-        db.session.commit()
-        raise e
-
-
-def get_referencing_tables(table_name, schema=""):
-    """Trouve toutes les tables (tous schémas) qui ont des FK pointant vers table_name"""
+def get_referencing_tables(table_name, db, schema="", exclude_tables=None):
+    """Trouve toutes les tables qui ont des FK pointant vers table_name,
+    en excluant les tables listées dans exclude_tables."""
+    exclude_tables = set(exclude_tables or [])
     inspector = sa_inspect(db.engine)
     referencing_tables = []
 
-    all_schemas = inspector.get_schema_names()
-
-    for other_schema in all_schemas:
+    for other_schema in inspector.get_schema_names():
         if other_schema in ("pg_catalog", "information_schema", "pg_toast"):
             continue
-
         try:
             for other_table in inspector.get_table_names(schema=other_schema):
-                fks = inspector.get_foreign_keys(other_table, schema=other_schema)
-
-                for fk in fks:
-                    referred_schema = fk.get("referred_schema", other_schema)
-
+                if other_schema == schema and other_table in exclude_tables:
+                    continue
+                for fk in inspector.get_foreign_keys(other_table, schema=other_schema):
+                    referred_schema = fk.get("referred_schema") or other_schema
                     if fk["referred_table"] == table_name and (
                         not schema or referred_schema == schema
                     ):
@@ -215,94 +154,69 @@ def get_referencing_tables(table_name, schema=""):
                             {
                                 "schema": other_schema,
                                 "table": other_table,
-                                "constraint_name": fk["name"],
                                 "fk_column": fk["constrained_columns"][0],
                                 "ref_column": fk["referred_columns"][0],
-                                "referred_schema": referred_schema,
                             }
                         )
         except Exception as e:
             print(f"Impossible d'inspecter le schéma {other_schema}: {e}")
-            continue
 
     return referencing_tables
 
 
-def check_broken_references():
-    inspector = sa_inspect(db.engine)
-
-    # Trouve toutes les tables qui référencent cette table
-    broken_refs = []
-
-    for other_table in inspector.get_table_names(schema=schema):
-        fks = inspector.get_foreign_keys(other_table, schema=schema)
-
-        for fk in fks:
-            # Si cette FK pointe vers notre table
-            if fk["referred_table"] == table_name:
-                fk_column = fk["constrained_columns"][0]
-                ref_column = fk["referred_columns"][0]
-
-                table_full = f"{schema}.{other_table}" if schema else other_table
-                ref_full = f"{schema}.{table_name}" if schema else table_name
-
-                # Requête pour trouver les orphelins
-                query = text(
-                    f"""
-                    SELECT COUNT(*) as broken_count
-                    FROM {table_full} t
-                    WHERE t.{fk_column} IS NOT NULL
-                    AND NOT EXISTS (
-                        SELECT 1 FROM {ref_full} r 
-                        WHERE r.{ref_column} = t.{fk_column}
-                    )
-                """
-                )
-
-                result = db.session.execute(query).fetchone()
-                if result[0] > 0:
-                    broken_refs.append(
-                        {"table": other_table, "column": fk_column, "broken_count": result[0]}
-                    )
-
-    return broken_refs
-
-
-def delete_tmp_tables(table_files):
-    for table, value in table_files.items():
-        db.session.execute(f"DROP TABLE ref_habitats.tmp_{table}")
-
-
-def compare_tables_on_column(schema, table1, table2, column="cd_hab"):
-
-    query = f"""
-        SELECT '{table1}' as source, {column}
-        FROM {schema}.{table1}
-        EXCEPT
-        SELECT '{table1}' as source, {column}
-        FROM {schema}.{table2}
-
-        UNION ALL
-
-        SELECT '{table2}' as source, {column}
-        FROM {schema}.{table2}
-        EXCEPT
-        SELECT '{table2}' as source, {column}
-        FROM {schema}.{table1}
+def export_orphans_to_csv(ref_table, new_ref_table, pk_col, output_path, db, schema="", exclude_tables=None):
     """
+    Compare ref_table (ancienne version) et new_ref_table (nouvelle version importée)
+    et exporte dans un CSV unique toutes les valeurs de pk_col présentes dans les tables
+    référençantes qui n'existent plus dans new_ref_table.
 
-    result = db.session.execute(query)
+    Colonnes CSV : table_name, schema, fk_column, fk_value, nb_lignes_affectees
+    """
+    ref_full = f"{schema}.{new_ref_table}" if schema else new_ref_table
+    referencing = get_referencing_tables(ref_table, db, schema=schema, exclude_tables=exclude_tables)
 
-    only_in_table1 = []
-    only_in_table2 = []
+    rows = []
+    for ref in referencing:
+        src_full = f"{ref['schema']}.{ref['table']}"
+        fk_col = ref["fk_column"]
+        result = db.session.execute(
+            text(
+                f"""
+                SELECT t.{fk_col}, COUNT(*) AS nb_lignes
+                FROM {src_full} t
+                WHERE t.{fk_col} IS NOT NULL
+                  AND NOT EXISTS (
+                      SELECT 1 FROM {ref_full} r WHERE r.{pk_col} = t.{fk_col}
+                  )
+                GROUP BY t.{fk_col}
+                ORDER BY t.{fk_col}
+                """
+            )
+        ).fetchall()
 
-    for row in result:
-        if row.source == table1:
-            only_in_table1.append(row[column])
-        else:
-            only_in_table2.append(row[column])
+        for fk_value, nb_lignes in result:
+            rows.append(
+                {
+                    "table_name": ref["table"],
+                    "schema": ref["schema"],
+                    "fk_column": fk_col,
+                    "fk_value": fk_value,
+                    "nb_lignes_affectees": nb_lignes,
+                }
+            )
 
-    return {
-        f"only_in_{table1}": only_in_table1,
-        f"only_in_{table2}": only_in_table2,
-    }
+    if not rows:
+        return 0
+
+    dirname = os.path.dirname(output_path)
+    if dirname:
+        os.makedirs(dirname, exist_ok=True)
+    with open(output_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=["table_name", "schema", "fk_column", "fk_value", "nb_lignes_affectees"],
+        )
+        writer.writeheader()
+        writer.writerows(rows)
+
+    return len(rows)

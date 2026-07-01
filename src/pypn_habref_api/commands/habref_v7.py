@@ -14,7 +14,7 @@ from flask.cli import with_appcontext
 from alembic import op
 
 from utils_flask_sqla.migrations.utils import open_remote_file
-from .utils import copy_from_csv, empty_table, restore_constraints, export_orphans_to_csv
+from .utils import copy_from_csv, empty_table, restore_constraints, collect_orphan_rows, export_orphans_to_csv
 
 base_url = "https://geonature.fr/data/inpn/habitats/"
 table_files = {
@@ -195,7 +195,6 @@ table_files = {
 
 
 def import_habref(logger, num_version, habref_archive_name):
-    delete_tmp_tables(table_files)
     with open_remote_file(base_url, habref_archive_name, open_fct=ZipFile) as archive:
         for table, value in table_files.items():
             logger.info(f"Insert HABREF v{num_version} {table}…")
@@ -213,14 +212,6 @@ def import_habref(logger, num_version, habref_archive_name):
                     schema="ref_habitats",
                     db=db,
                 )
-                diff = compare_tables_on_column(
-                    "ref_habitats", table, f"tmp_{table}", value["unique_column"]
-                )
-                print("TEEEEEEEEEESSSSSTTT")
-                print("table : ", table)
-                print("référence : ", get_referencing_tables(table, "ref_habitats"))
-                # print(diff[f"only_in_{table}"])
-                # print(diff[f"only_in_tmp_{table}"])
 
 
 @click.command()
@@ -235,17 +226,22 @@ def import_v07():
     )
 
     logger.info("Détection des données orphelines…")
-    nb = export_orphans_to_csv(
-        ref_table="habref",
-        new_ref_table="tmp_habref",
-        pk_col="cd_hab",
-        output_path="tmp/habref/orphans_habref.csv",
-        db=db,
-        schema="ref_habitats",
-        exclude_tables=list(table_files.keys()),
-    )
+    all_orphans = []
+    for table, config in table_files.items():
+        logger.info(f"  Vérification de {table}…")
+        all_orphans.extend(
+            collect_orphan_rows(
+                ref_table=table,
+                new_ref_table=f"tmp_{table}",
+                pk_col=config["unique_column"],
+                db=db,
+                schema="ref_habitats",
+                exclude_tables=list(table_files.keys()),
+            )
+        )
+    nb = export_orphans_to_csv(all_orphans, "tmp/habref/orphans_habref.csv")
     if nb:
-        logger.warning(f"{nb} valeur(s) orpheline(s) détectée(s), voir {orphans_output}")
+        logger.warning(f"{nb} valeur(s) orpheline(s) détectée(s), voir tmp/habref/orphans_habref.csv")
     else:
         logger.info("Aucune donnée orpheline détectée.")
 

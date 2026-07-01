@@ -4,7 +4,7 @@ from csv import DictReader
 from io import TextIOWrapper
 
 import sqlalchemy as sa
-from sqlalchemy import inspect as sa_inspect, text
+from sqlalchemy import inspect as sa_inspect, func, exists, select, table as sa_table, column as sa_column
 from sqlalchemy.schema import (
     Table,
     MetaData,
@@ -164,39 +164,32 @@ def get_referencing_tables(table_name, db, schema="", exclude_tables=None):
     return referencing_tables
 
 
-def export_orphans_to_csv(ref_table, new_ref_table, pk_col, output_path, db, schema="", exclude_tables=None):
-    """
-    Compare ref_table (ancienne version) et new_ref_table (nouvelle version importée)
-    et exporte dans un CSV unique toutes les valeurs de pk_col présentes dans les tables
-    référençantes qui n'existent plus dans new_ref_table.
+CSV_FIELDNAMES = ["ref_table", "table_name", "schema", "fk_column", "fk_value", "nb_lignes_affectees"]
 
-    Colonnes CSV : table_name, schema, fk_column, fk_value, nb_lignes_affectees
+
+def collect_orphan_rows(ref_table, new_ref_table, pk_col, db, schema="", exclude_tables=None):
     """
-    ref_full = f"{schema}.{new_ref_table}" if schema else new_ref_table
+    Retourne la liste des lignes orphelines pour une table du référentiel :
+    valeurs de pk_col présentes dans les tables référençantes mais absentes de new_ref_table.
+    """
     referencing = get_referencing_tables(ref_table, db, schema=schema, exclude_tables=exclude_tables)
-
     rows = []
     for ref in referencing:
-        src_full = f"{ref['schema']}.{ref['table']}"
         fk_col = ref["fk_column"]
-        result = db.session.execute(
-            text(
-                f"""
-                SELECT t.{fk_col}, COUNT(*) AS nb_lignes
-                FROM {src_full} t
-                WHERE t.{fk_col} IS NOT NULL
-                  AND NOT EXISTS (
-                      SELECT 1 FROM {ref_full} r WHERE r.{pk_col} = t.{fk_col}
-                  )
-                GROUP BY t.{fk_col}
-                ORDER BY t.{fk_col}
-                """
-            )
-        ).fetchall()
-
-        for fk_value, nb_lignes in result:
+        src = sa_table(ref["table"], sa_column(fk_col), schema=ref["schema"])
+        ref_t = sa_table(new_ref_table, sa_column(pk_col), schema=schema)
+        subq = select(1).select_from(ref_t).where(ref_t.c[pk_col] == src.c[fk_col])
+        stmt = (
+            select(src.c[fk_col], func.count().label("nb_lignes"))
+            .where(src.c[fk_col].isnot(None))
+            .where(~exists(subq))
+            .group_by(src.c[fk_col])
+            .order_by(src.c[fk_col])
+        )
+        for fk_value, nb_lignes in db.session.execute(stmt).fetchall():
             rows.append(
                 {
+                    "ref_table": ref_table,
                     "table_name": ref["table"],
                     "schema": ref["schema"],
                     "fk_column": fk_col,
@@ -204,19 +197,18 @@ def export_orphans_to_csv(ref_table, new_ref_table, pk_col, output_path, db, sch
                     "nb_lignes_affectees": nb_lignes,
                 }
             )
+    return rows
 
+
+def export_orphans_to_csv(rows, output_path):
+    """Écrit la liste de lignes orphelines dans un CSV."""
     if not rows:
         return 0
-
     dirname = os.path.dirname(output_path)
     if dirname:
         os.makedirs(dirname, exist_ok=True)
     with open(output_path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(
-            f,
-            fieldnames=["table_name", "schema", "fk_column", "fk_value", "nb_lignes_affectees"],
-        )
+        writer = csv.DictWriter(f, fieldnames=CSV_FIELDNAMES)
         writer.writeheader()
         writer.writerows(rows)
-
     return len(rows)

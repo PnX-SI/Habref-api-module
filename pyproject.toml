@@ -48,6 +48,9 @@ where = ["src"]
 include = ["pypn_habref_api*"]
 exclude = ["pypn_habref_api.tests*"]
 
+[project.entry-points."flask.commands"]
+habref = "pypn_habref_api.commands.habref:habref"
+
 [tool.setuptools.dynamic]
 version = { file = "VERSION" }
 

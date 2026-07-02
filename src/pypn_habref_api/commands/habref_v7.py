@@ -14,7 +14,13 @@ from flask.cli import with_appcontext
 from alembic import op
 
 from utils_flask_sqla.migrations.utils import open_remote_file
-from .utils import copy_from_csv, empty_table, restore_constraints, collect_orphan_rows, export_orphans_to_csv
+from .utils import (
+    copy_from_csv,
+    empty_table,
+    restore_constraints,
+    collect_orphan_rows,
+    export_orphans_to_csv,
+)
 
 base_url = "https://geonature.fr/data/inpn/habitats/"
 table_files = {
@@ -241,7 +247,9 @@ def import_v07():
         )
     nb = export_orphans_to_csv(all_orphans, "tmp/habref/orphans_habref.csv")
     if nb:
-        logger.warning(f"{nb} valeur(s) orpheline(s) détectée(s), voir tmp/habref/orphans_habref.csv")
+        logger.warning(
+            f"{nb} valeur(s) orpheline(s) détectée(s), voir tmp/habref/orphans_habref.csv"
+        )
     else:
         logger.info("Aucune donnée orpheline détectée.")
 
@@ -264,7 +272,9 @@ def apply_habref(logger):
 
     logger.info("Remplissage de autocomplete_habitat…")
     db.session.execute(sa_text("DELETE FROM ref_habitats.autocomplete_habitat"))
-    db.session.execute(sa_text("""
+    db.session.execute(
+        sa_text(
+            """
         INSERT INTO ref_habitats.autocomplete_habitat
         SELECT
             cd_hab,
@@ -274,7 +284,9 @@ def apply_habref(logger):
             concat(lb_code, ' - ', lb_hab_fr, ' ', lb_hab_fr_complet)
         FROM ref_habitats.habref h
         JOIN ref_habitats.typoref t ON t.cd_typo = h.cd_typo
-    """))
+    """
+        )
+    )
 
     db.session.execute(sa_text("SET session_replication_role = 'origin'"))
 

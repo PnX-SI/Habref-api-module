@@ -18,7 +18,8 @@ depends_on = None
 
 
 def upgrade():
-    op.execute("""
+    op.execute(
+        """
         ALTER TABLE ref_habitats.habref ADD column lb_hab_en_save character varying(500);
         UPDATE ref_habitats.habref 
         SET lb_hab_en_save = lb_auteur;
@@ -27,8 +28,10 @@ def upgrade():
         UPDATE ref_habitats.habref 
         SET lb_hab_en = lb_hab_en_save;
         ALTER TABLE ref_habitats.habref DROP column lb_hab_en_save
-    """)
-    op.execute("""
+    """
+    )
+    op.execute(
+        """
         DELETE FROM ref_habitats.autocomplete_habitat;
         INSERT INTO ref_habitats.autocomplete_habitat
         SELECT 
@@ -39,7 +42,8 @@ def upgrade():
         concat(lb_code, ' - ', lb_hab_fr, ' ', lb_hab_fr_complet)
         FROM ref_habitats.habref h
         JOIN ref_habitats.typoref t ON t.cd_typo = h.cd_typo;
-    """)
+    """
+    )
 
 
 def downgrade():

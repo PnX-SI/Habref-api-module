@@ -4,7 +4,14 @@ from csv import DictReader
 from io import TextIOWrapper
 
 import sqlalchemy as sa
-from sqlalchemy import inspect as sa_inspect, func, exists, select, table as sa_table, column as sa_column
+from sqlalchemy import (
+    inspect as sa_inspect,
+    func,
+    exists,
+    select,
+    table as sa_table,
+    column as sa_column,
+)
 from sqlalchemy.schema import (
     Table,
     MetaData,
@@ -79,7 +86,9 @@ def copy_from_csv(
         f,
     )
 
-    testTable = Table(final_table_name, MetaData(), schema=schema, autoload_with=db.session.connection())
+    testTable = Table(
+        final_table_name, MetaData(), schema=schema, autoload_with=db.session.connection()
+    )
 
     for col in testTable.columns:
         if col.name in table_fields:
@@ -164,7 +173,14 @@ def get_referencing_tables(table_name, db, schema="", exclude_tables=None):
     return referencing_tables
 
 
-CSV_FIELDNAMES = ["ref_table", "table_name", "schema", "fk_column", "fk_value", "nb_lignes_affectees"]
+CSV_FIELDNAMES = [
+    "ref_table",
+    "table_name",
+    "schema",
+    "fk_column",
+    "fk_value",
+    "nb_lignes_affectees",
+]
 
 
 def collect_orphan_rows(ref_table, new_ref_table, pk_col, db, schema="", exclude_tables=None):
@@ -172,7 +188,9 @@ def collect_orphan_rows(ref_table, new_ref_table, pk_col, db, schema="", exclude
     Retourne la liste des lignes orphelines pour une table du référentiel :
     valeurs de pk_col présentes dans les tables référençantes mais absentes de new_ref_table.
     """
-    referencing = get_referencing_tables(ref_table, db, schema=schema, exclude_tables=exclude_tables)
+    referencing = get_referencing_tables(
+        ref_table, db, schema=schema, exclude_tables=exclude_tables
+    )
     rows = []
     for ref in referencing:
         fk_col = ref["fk_column"]

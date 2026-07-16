@@ -10,8 +10,9 @@ from unittest.mock import patch
 import pytest
 from sqlalchemy import inspect as sa_inspect, text
 
-from pypn_habref_api.commands.habref_v7 import apply_habref, import_habref, table_files
-from pypn_habref_api.commands.utils import collect_orphan_rows, export_orphans_to_csv
+from pypn_habref_api.commands.habref_v7 import table_files, base_url
+from pypn_habref_api.commands.utils import apply_habref, import_habref
+from utils_flask_sqla.referential import collect_orphan_rows, export_orphans_to_csv
 from pypn_habref_api.env import db
 
 
@@ -62,8 +63,15 @@ class TestImportHabref:
                 yield zf
 
         try:
-            with patch("pypn_habref_api.commands.habref_v7.open_remote_file", fake_open_remote):
-                import_habref(logger, num_version="07", habref_archive_name="HABREF_70.zip")
+            with patch("pypn_habref_api.commands.utils.open_remote_file", fake_open_remote):
+                import_habref(
+                    logger,
+                    table_files=table_files,
+                    schema="ref_habitats",
+                    base_url=base_url,
+                    num_version="07",
+                    archive_name="HABREF_70.zip",
+                )
 
             inspector = sa_inspect(db.engine)
             existing = inspector.get_table_names(schema="ref_habitats")
@@ -151,7 +159,7 @@ class TestApplyHabref:
                 )
             db.session.flush()
 
-            apply_habref(logger)
+            apply_habref(logger, table_files=table_files, schema="ref_habitats")
             db.session.flush()
 
             count_after = db.session.execute(

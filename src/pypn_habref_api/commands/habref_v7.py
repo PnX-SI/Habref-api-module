@@ -1,26 +1,12 @@
-from zipfile import ZipFile
-from collections import OrderedDict
 import logging
 
-from pypn_habref_api.models import BibListHabitat, Habref
 from pypn_habref_api.env import db
-
-from sqlalchemy import text as sa_text
-from sqlalchemy.schema import Table, MetaData, PrimaryKeyConstraint
 
 import click
 from flask.cli import with_appcontext
 
-from alembic import op
-
-from utils_flask_sqla.migrations.utils import open_remote_file
-from .utils import (
-    copy_from_csv,
-    empty_table,
-    restore_constraints,
-    collect_orphan_rows,
-    export_orphans_to_csv,
-)
+from utils_flask_sqla.referential import collect_orphan_rows, export_orphans_to_csv
+from .utils import import_habref, apply_habref
 
 base_url = "https://geonature.fr/data/inpn/habitats/"
 table_files = {
@@ -178,9 +164,6 @@ table_files = {
             "cd_hab_description": "CD_HAB_DESCRIPTION",
             "cd_hab": "CD_HAB",
             "cd_hab_field": "CD_HAB_FIELD",
-            "cd_typo": "CD_TYPO",
-            "lb_code": "LB_CODE",
-            "lb_hab_field": "LB_HAB_FIELD",
             "valeurs": "VALEURS",
         },
     },
@@ -200,26 +183,6 @@ table_files = {
 }
 
 
-def import_habref(logger, num_version, habref_archive_name):
-    with open_remote_file(base_url, habref_archive_name, open_fct=ZipFile) as archive:
-        for table, value in table_files.items():
-            logger.info(f"Insert HABREF v{num_version} {table}…")
-            with archive.open(value["filename"]) as f:
-                db.session.execute(f"DROP TABLE IF EXISTS ref_habitats.tmp_{table};")
-                db.session.execute(
-                    f"CREATE TABLE ref_habitats.tmp_{table} AS TABLE ref_habitats.{table} WITH NO DATA;"
-                )
-                copy_from_csv(
-                    f,
-                    f"tmp_{table}",
-                    value["table_fields"],
-                    encoding="UTF-8",
-                    delimiter=";",
-                    schema="ref_habitats",
-                    db=db,
-                )
-
-
 @click.command()
 @with_appcontext
 def import_v07():
@@ -227,8 +190,11 @@ def import_v07():
 
     import_habref(
         logger,
+        table_files=table_files,
+        schema="ref_habitats",
+        base_url=base_url,
         num_version="07",
-        habref_archive_name="HABREF_70.zip",
+        archive_name="HABREF_70.zip",
     )
 
     logger.info("Détection des données orphelines…")
@@ -257,50 +223,12 @@ def import_v07():
     db.session.commit()
 
 
-def apply_habref(logger):
-    db.session.execute(sa_text("SET session_replication_role = 'replica'"))
-
-    for table in reversed(list(table_files.keys())):
-        logger.info(f"Vidage de {table}…")
-        db.session.execute(sa_text(f"DELETE FROM ref_habitats.{table}"))
-
-    for table in table_files.keys():
-        logger.info(f"Remplissage de {table} depuis tmp_{table}…")
-        db.session.execute(
-            sa_text(f"INSERT INTO ref_habitats.{table} SELECT * FROM ref_habitats.tmp_{table}")
-        )
-
-    logger.info("Remplissage de autocomplete_habitat…")
-    db.session.execute(sa_text("DELETE FROM ref_habitats.autocomplete_habitat"))
-    db.session.execute(
-        sa_text(
-            """
-        INSERT INTO ref_habitats.autocomplete_habitat
-        SELECT
-            cd_hab,
-            h.cd_typo,
-            lb_code,
-            lb_nom_typo,
-            concat(lb_code, ' - ', lb_hab_fr, ' ', lb_hab_fr_complet)
-        FROM ref_habitats.habref h
-        JOIN ref_habitats.typoref t ON t.cd_typo = h.cd_typo
-    """
-        )
-    )
-
-    db.session.execute(sa_text("SET session_replication_role = 'origin'"))
-
-    for table in reversed(list(table_files.keys())):
-        logger.info(f"Suppression de tmp_{table}…")
-        db.session.execute(sa_text(f"DROP TABLE IF EXISTS ref_habitats.tmp_{table}"))
-
-
 @click.command()
 @with_appcontext
 def apply_v07():
     logger = logging.getLogger()
 
-    apply_habref(logger)
+    apply_habref(logger, table_files=table_files, schema="ref_habitats")
 
     logger.info("Committing…")
     db.session.commit()

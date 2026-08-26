@@ -5,6 +5,9 @@ from flask_migrate import Migrate
 
 from pypn_habref_api.env import db, ma
 from pypn_habref_api.routes import routes
+from . import migrations
+
+__all__ = ["migrations"]
 
 migrate = Migrate()
 

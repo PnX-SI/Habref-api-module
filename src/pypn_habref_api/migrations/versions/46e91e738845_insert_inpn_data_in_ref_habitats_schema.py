@@ -52,8 +52,7 @@ def upgrade():
                 )
 
     logger.info("Populate table autocomplete_habitat…")
-    op.execute(
-        """
+    op.execute("""
     INSERT INTO ref_habitats.autocomplete_habitat
     SELECT
     cd_hab,
@@ -63,8 +62,7 @@ def upgrade():
     concat(lb_code, ' - ', lb_hab_fr, ' ', lb_hab_fr_complet)
     FROM ref_habitats.habref h
     JOIN ref_habitats.typoref t ON t.cd_typo = h.cd_typo
-    """
-    )
+    """)
 
 
 def downgrade():

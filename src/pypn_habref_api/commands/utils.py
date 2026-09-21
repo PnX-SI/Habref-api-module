@@ -104,7 +104,9 @@ def import_habref(logger, table_files, schema, base_url, num_version, archive_na
             with archive.open(value["filename"]) as f:
                 db.session.execute(sa_text(f"DROP TABLE IF EXISTS {schema}.tmp_{table}"))
                 db.session.execute(
-                    sa_text(f"CREATE TABLE {schema}.tmp_{table} AS TABLE {schema}.{table} WITH NO DATA")
+                    sa_text(
+                        f"CREATE TABLE {schema}.tmp_{table} AS TABLE {schema}.{table} WITH NO DATA"
+                    )
                 )
                 copy_from_csv(
                     f,

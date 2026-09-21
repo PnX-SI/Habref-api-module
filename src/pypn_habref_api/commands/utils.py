@@ -88,11 +88,11 @@ def copy_from_csv(
             table_fields[col.name] = f"{table_fields[col.name]}::{col.type}"
     table_fields_list = list(table_fields.values())
 
-    db.session.execute(f"""
+    db.session.execute(sa_text(f"""
     INSERT INTO {schema}.{final_table_name} ({", ".join(table_fields_key_list)})
         SELECT {", ".join(table_fields_list)}
         FROM {schema}.{table_name};
-    """)
+    """))
     table.drop(bind=db.session.connection())
 
 

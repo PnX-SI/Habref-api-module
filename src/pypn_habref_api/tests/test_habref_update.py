@@ -73,7 +73,7 @@ class TestImportHabref:
                     archive_name="HABREF_70.zip",
                 )
 
-            inspector = sa_inspect(db.engine)
+            inspector = sa_inspect(db.session.connection())
             existing = inspector.get_table_names(schema="ref_habitats")
             for table in table_files:
                 assert f"tmp_{table}" in existing
@@ -168,7 +168,7 @@ class TestApplyHabref:
             ).scalar()
             assert count_after == count_before
 
-            inspector = sa_inspect(db.engine)
+            inspector = sa_inspect(db.session.connection())
             existing = inspector.get_table_names(schema="ref_habitats")
             for table in table_files:
                 assert f"tmp_{table}" not in existing

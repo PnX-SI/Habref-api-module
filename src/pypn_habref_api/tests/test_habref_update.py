@@ -103,8 +103,9 @@ class TestExportOrphans:
             db.session.execute(text("SET session_replication_role = 'replica'"))
             db.session.execute(
                 text(
-                    "INSERT INTO ref_habitats.cor_list_habitat (id_cor_list, cd_hab) "
-                    "SELECT COALESCE(MAX(id_cor_list), 0) + 1, :cd "
+                    "INSERT INTO ref_habitats.cor_list_habitat (id_cor_list, id_list, cd_hab) "
+                    "SELECT COALESCE(MAX(id_cor_list), 0) + 1, "
+                    "COALESCE((SELECT MIN(id_list) FROM ref_habitats.bib_list_habitat), 1), :cd "
                     "FROM ref_habitats.cor_list_habitat"
                 ),
                 {"cd": orphan_cd_hab},

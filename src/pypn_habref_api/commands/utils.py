@@ -44,8 +44,7 @@ def copy_from_csv(
     delimiter=None,
     db=None,
 ):
-    bind = db.session.get_bind()
-    metadata = MetaData(bind=bind)
+    metadata = MetaData()
     engine = db.engine
 
     table_fields_list = list(table_fields.values())

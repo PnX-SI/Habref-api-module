@@ -1,33 +1,34 @@
-# Mise à jour du référentiel HABREF
+# Mise à jour du référentiel HabRef
 
-Scripts permettant de mettre à jour le référentiel des habitats (HABREF) vers une nouvelle version.
+Scripts permettant de mettre à jour le référentiel des habitats (HabRef) vers une nouvelle version.
+Cette documentation donne l'exemple pour passer à la version 7 de HabRef.
 
 ## Avant de commencer
 
 > [!WARNING]
-> La mise à jour du référentiel HABREF efface les données de la version du référentiel précédemment installée.
+> La mise à jour du référentiel HabRef efface les données de la version du référentiel précédemment installée.
 
 > [!WARNING]
 > Il est fortement recommandé de **faire une sauvegarde de la base de données** avant de commencer.
 
 ## 1. Importer la nouvelle version et détecter les orphelins
 
-Dans la première étape, il faut télécharger les données du référentiels, stocker ces dernières dans une table temporaire (ref*habitats.tmp*<num_version>). Pour cela, on lance la commande :
+Dans la première étape, il faut télécharger les données du référentiel, stocker ces dernières dans une table temporaire (ref*habitats.tmp*<num_version>). Pour cela, on lance la commande :
 
 ```bash
 geonature habref import-v07
 ```
 
-> [!DANGER]
-> Il se peut que certaines entrées du référentiels soient supprimées lors d'une mise à jours. Dans ce cas, le fichier `tmp/habref/orphans_habref.csv` liste l'ensemble des données dans votre base utilisant ces entrées Habref.
+> [!CAUTION]
+> Il se peut que certaines entrées du référentiel soient supprimées lors d'une mise à jour. Dans ce cas, le fichier `tmp/habref/orphans_habref.csv` liste l'ensemble des données dans votre base de données utilisant ces entrées HabRef.
 
 Si la commande est relancée, les tables temporaires existantes sont automatiquement supprimées et recréées.
 
 ---
 
-## 2 — Analyser et corriger les données orphelines
+## 2. Analyser et corriger les données orphelines
 
-Dans le cas où plusieurs données orphelines ont été détecté dans l'étape précédente, consultez le fichier `tmp/habref/orphans_habref.csv`. Pour chaque ligne de ce fichier, la valeur `fk_value` est un code habitat qui sera supprimé lors de la mise à jour.
+Dans le cas où plusieurs données orphelines ont été détectées dans l'étape précédente, consultez le fichier `tmp/habref/orphans_habref.csv`. Pour chaque ligne de ce fichier, la valeur `fk_value` est un code habitat qui sera supprimé lors de la mise à jour.
 
 Le CSV généré contient les colonnes suivantes :
 
@@ -47,7 +48,7 @@ Vous devez décider, pour chaque cas :
 
 ---
 
-## 3 — Appliquer la mise à jour
+## 3. Appliquer la mise à jour
 
 Une fois les données orphelines corrigées, lancez la mise à jour effective du référentiel à l'aide de la commande suivante :
 

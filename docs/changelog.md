@@ -1,9 +1,10 @@
 # CHANGELOG
 
-## 0.5.0 (unreleased)
+## 1.0.0 (unreleased)
 
 **🚀 Nouveautés**
 
+- Ajout de commandes pour mettre à jour HabRef, en version 7.0 (#9 par @Pierre-Narcisi)
 - Mise à jour de Utils-Flask-SQLAlchemy en version 0.5.0 (#25 par @jacquesfize)
 
 ## 0.4.4 (2026-02-18)

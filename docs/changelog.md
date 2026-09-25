@@ -5,13 +5,19 @@
 **🚀 Nouveautés**
 
 - Ajout de commandes pour mettre à jour HabRef, en version 7.0 (#9 par @Pierre-Narcisi)
+- Mise à jour de SQLAlchemy en version 2.0 (#25 par @jacquesfize)
 - Mise à jour de Utils-Flask-SQLAlchemy en version 0.5.0 (#25 par @jacquesfize)
+
+**🐛 Corrections**
+
+- Correction de la CI (#26 par @jacquesfize)
+- Correction d'une erreur d'import (#29 par @christophe-ramet)
 
 ## 0.4.4 (2026-02-18)
 
 **🚀 Nouveautés**
 
-- Mise à jour de Utils-Flask-SQLAlchemy en version 0.4.5 (par  @jacquesfize)
+- Mise à jour de Utils-Flask-SQLAlchemy en version 0.4.5 (par @jacquesfize)
 
 ## 0.4.3 (2026-01-14)
 

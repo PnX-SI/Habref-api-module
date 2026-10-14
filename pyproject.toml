@@ -29,8 +29,8 @@ dependencies = [
     "flask-sqlalchemy",
     "flask-marshmallow",
     "python-dotenv",
-    "sqlalchemy<3",
-    "utils-flask-sqlalchemy>=0.4.2",
+    "sqlalchemy>=2.0,<2.1",
+    "utils-flask-sqlalchemy>=0.5.0",
     "psycopg2",
 ]
 

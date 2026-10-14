@@ -71,7 +71,8 @@ jobs:
         env:
           HABREF_SETTINGS: test_settings.py
       - name: Upload coverage to Codecov
-        if: ${{ matrix.debian-version == '11'}}
+        if: ${{ matrix.debian-version == '13'}}
         uses: codecov/codecov-action@v7
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           flags: pytest
